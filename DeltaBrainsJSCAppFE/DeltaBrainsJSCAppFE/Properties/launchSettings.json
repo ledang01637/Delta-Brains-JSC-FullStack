@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DeltaBrainsJSCAppFE (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DeltaBrainsJSCAppFE (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
