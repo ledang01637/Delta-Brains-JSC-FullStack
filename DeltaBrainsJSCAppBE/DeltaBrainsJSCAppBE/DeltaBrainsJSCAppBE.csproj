@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.36">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -25,8 +26,6 @@
     <Folder Include="Controllers\" />
     <Folder Include="DTOs\Request\" />
     <Folder Include="DTOs\Response\" />
-    <Folder Include="Models\" />
-    <Folder Include="Enum\" />
     <Folder Include="Services\Implements\" />
     <Folder Include="Services\Interfaces\" />
   </ItemGroup>

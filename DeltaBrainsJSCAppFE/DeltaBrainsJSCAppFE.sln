@@ -3,41 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaBrainsJSCAppFE", "DeltaBrainsJSCAppFE\DeltaBrainsJSCAppFE.csproj", "{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaBrainsJSCAppFE", "DeltaBrainsJSCAppFE\DeltaBrainsJSCAppFE.csproj", "{346F168B-B3BA-43D6-B2FA-68B8F7814625}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|ARM64 = Debug|ARM64
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|ARM64 = Release|ARM64
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Debug|ARM64.Build.0 = Debug|ARM64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Debug|ARM64.Deploy.0 = Debug|ARM64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Debug|x64.ActiveCfg = Debug|x64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Debug|x64.Build.0 = Debug|x64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Debug|x64.Deploy.0 = Debug|x64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Debug|x86.ActiveCfg = Debug|x86
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Debug|x86.Build.0 = Debug|x86
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Debug|x86.Deploy.0 = Debug|x86
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Release|ARM64.ActiveCfg = Release|ARM64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Release|ARM64.Build.0 = Release|ARM64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Release|ARM64.Deploy.0 = Release|ARM64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Release|x64.ActiveCfg = Release|x64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Release|x64.Build.0 = Release|x64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Release|x64.Deploy.0 = Release|x64
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Release|x86.ActiveCfg = Release|x86
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Release|x86.Build.0 = Release|x86
-		{F1D2CCEF-8F44-48C3-9362-BB821DE8CE43}.Release|x86.Deploy.0 = Release|x86
+		{346F168B-B3BA-43D6-B2FA-68B8F7814625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{346F168B-B3BA-43D6-B2FA-68B8F7814625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{346F168B-B3BA-43D6-B2FA-68B8F7814625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{346F168B-B3BA-43D6-B2FA-68B8F7814625}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D4671A18-EF7C-4BB1-B243-E4007B66D4C9}
+		SolutionGuid = {64E3CFF5-2410-4FDD-8289-E4B6E42B3DBF}
 	EndGlobalSection
 EndGlobal
