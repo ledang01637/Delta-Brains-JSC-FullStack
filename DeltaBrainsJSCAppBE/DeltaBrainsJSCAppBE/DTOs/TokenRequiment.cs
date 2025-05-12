@@ -1,4 +1,4 @@
-﻿namespace DeltaBrainsJSCAppBE.Models
+﻿namespace DeltaBrainsJSCAppBE.DTOs
 {
     public class TokenRequiment
     {

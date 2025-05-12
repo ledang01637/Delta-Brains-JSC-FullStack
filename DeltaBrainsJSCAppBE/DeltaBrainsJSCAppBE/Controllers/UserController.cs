@@ -7,16 +7,16 @@ namespace DeltaBrainsJSCAppBE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RoleController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly IRole _service;
-        public RoleController(IRole service)
+        private readonly IUser _service;
+        public UserController(IUser service)
         {
             _service = service;
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> AddNew([FromBody] RoleReq request)
+        public async Task<IActionResult> AddNew([FromBody] UserReq request)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Dữ liệu không hợp lệ.");

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeltaBrainsJSCAppBE.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20250511092210_Init")]
+    [Migration("20250512092412_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -152,7 +152,7 @@ namespace DeltaBrainsJSCAppBE.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("char(64)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");

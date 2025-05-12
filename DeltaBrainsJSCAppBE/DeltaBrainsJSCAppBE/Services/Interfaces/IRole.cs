@@ -4,19 +4,19 @@ using DeltaBrainsJSCAppBE.DTOs.Response;
 
 namespace DeltaBrainsJSCAppBE.Services.Interfaces
 {
-    public interface IAuth
+    public interface IRole
     {
         /// <summary>
-        /// Đăng nhập
+        /// Thêm mới Role
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        ApiResponse<LoginRes> Login(LoginReq request);
+        Task<ApiResponse<RoleRes>> Create(RoleReq request);
 
         /// <summary>
-        /// Đăng xuất
-        /// </summary>
+        /// Lấy danh sách Role
+        /// </summary
         /// <returns></returns>
-        ApiResponse<bool> Logout();
+        Task<ApiResponse<List<RoleRes>>> GetAll();
     }
 }

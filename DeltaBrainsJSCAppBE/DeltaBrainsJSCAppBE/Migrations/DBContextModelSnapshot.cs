@@ -150,7 +150,7 @@ namespace DeltaBrainsJSCAppBE.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("char(64)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");

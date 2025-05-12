@@ -1,6 +1,8 @@
 using DeltaBrainJSC.DB;
 using DeltaBrainsJSCAppBE.DTOs;
 using DeltaBrainsJSCAppBE.Hubs;
+using DeltaBrainsJSCAppBE.Services.Implements;
+using DeltaBrainsJSCAppBE.Services.Interfaces;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +25,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IAuth, AuthService>();
+builder.Services.AddScoped<IRole, RoleService>();
+builder.Services.AddScoped<IUser, UserService>();
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(databaseUrl)
@@ -73,35 +80,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                         }
                     };
                 });
-
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "Enter AccessToken",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
 
 builder.Services.AddAuthorization();
 

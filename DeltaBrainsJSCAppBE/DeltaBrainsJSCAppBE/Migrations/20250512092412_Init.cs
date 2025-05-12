@@ -31,7 +31,7 @@ namespace DeltaBrainsJSCAppBE.Migrations
                     RoleId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "char(64)", nullable: false),
                     DeviceToken = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
