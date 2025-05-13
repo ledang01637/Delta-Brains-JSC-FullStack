@@ -2,6 +2,7 @@
 using DeltaBrainsJSCAppFE.Models.Request;
 using DeltaBrainsJSCAppFE.Models.Response;
 using DeltaBrainsJSCAppFE.Views;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -55,45 +56,69 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                    !string.IsNullOrWhiteSpace(Password);
         }
 
-        public async Task LoginAsync(Window? p)
+        public async Task LoginAsync(Window? parentWindow)
         {
-            if(p == null)
+            if (parentWindow == null)
             {
-                MessageBox.Show("Lỗi hệ thống.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Lỗi hệ thống: Không xác định được cửa sổ cha.",
+                              "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
+            {
+                MessageBox.Show("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.",
+                              "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             IsLoading = true;
 
             try
             {
-                var result = await AuthHandel.Login(Username, Password);
+                var loginResult = await AuthHandel.Login(Username, Password);
 
-                if (!result.IsSuccess)
+                if (!loginResult.IsSuccess || string.IsNullOrEmpty(loginResult.Data?.Token))
                 {
-                    MessageBox.Show("Sai tài khoản mật khẩu.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản và mật khẩu.",
+                                  "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                var role = GetRoleFromToken(result.Data.Token);
+                var role = GetRoleFromToken(loginResult.Data.Token);
 
-                if (role == "admin")
+                Window newWindow = role switch
                 {
-                    new ManagerWindow().Show();
-                    p.Close();
-                }
-                else if (role == "employee")
+                    "admin" => new ManagerWindow(),
+                    "employee" => new EmployeeWindow(),
+                    _ => throw new NotImplementedException()
+                };
+
+                if (newWindow != null)
                 {
-                    new EmployeeWindow().Show();
-                    p.Close();
+                    newWindow.Show();
+                    parentWindow.Close();
                 }
                 else
                 {
-                    MessageBox.Show("Tài khoản không có quyền truy cập.", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Tài khoản không có quyền truy cập phù hợp.",
+                                   "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                MessageBox.Show($"Lỗi kết nối: {httpEx.Message}",
+                               "Lỗi mạng", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (SecurityTokenException tokenEx)
+            {
+                MessageBox.Show($"Lỗi xác thực: {tokenEx.Message}",
+                               "Lỗi bảo mật", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi đăng nhập: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Lỗi không xác định: {ex.Message}",
+                               "Lỗi hệ thống", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

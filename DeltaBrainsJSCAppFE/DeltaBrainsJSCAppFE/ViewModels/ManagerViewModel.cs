@@ -11,6 +11,7 @@ using System.Net.Http;
 using static System.Net.WebRequestMethods;
 using System.Net.Http.Json;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
@@ -26,9 +27,9 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             set { _isLoading = value; OnPropertyChanged(); }
         }
 
-        private List<TaskRes> _listTask;
+        private ObservableCollection<TaskRes> _listTask;
 
-        public List<TaskRes> ListTask
+        public ObservableCollection<TaskRes> ListTask
         {
             get => _listTask;
             set
@@ -43,7 +44,12 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
         public ManagerViewModel()
         {
-            _ = GetTasks();
+            Init();
+        }
+
+        private async void Init()
+        {
+            await GetTasks();
         }
 
         public async Task GetTasks()
@@ -54,11 +60,16 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
                 string url = "https://localhost:7089/api/Task/get-list";
 
-                var response = await _httpClient.GetFromJsonAsync<ApiResponse<List<TaskRes>>>(url);
+                ListTask = new ObservableCollection<TaskRes>();
+
+                var response = await _httpClient.GetFromJsonAsync<ApiResponse<ObservableCollection<TaskRes>>>(url);
 
                 if (response != null && response.Code == 200)
                 {
-                    ListTask = response.Data;
+                    foreach(var item in response.Data)
+                    {
+                        ListTask.Add(item);
+                    }
                 }
                 else
                 {

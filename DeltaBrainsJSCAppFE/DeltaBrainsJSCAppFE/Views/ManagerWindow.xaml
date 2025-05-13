@@ -8,7 +8,7 @@
         xmlns:uc="clr-namespace:DeltaBrainsJSCAppFE.CustomUserControl" 
         xmlns:converters="clr-namespace:DeltaBrainsJSCAppFE.Handel" 
         xmlns:viewmodels="clr-namespace:DeltaBrainsJSCAppFE.ViewModels" 
-
+        d:DataContext="{d:DesignInstance Type=viewmodels:ManagerViewModel}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize"

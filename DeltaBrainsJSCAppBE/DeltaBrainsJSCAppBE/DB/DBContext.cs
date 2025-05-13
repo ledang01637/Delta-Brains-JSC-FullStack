@@ -52,11 +52,9 @@ namespace DeltaBrainJSC.DB
 
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Role)
-                .WithOne()
-                .HasForeignKey<User>(u => u.RoleId)
+                .WithMany(u=> u.Users)
+                .HasForeignKey(u => u.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-
 
             // Task
             modelBuilder.Entity<Task>()

@@ -24,13 +24,6 @@ namespace DeltaBrainsJSCAppFE.Views
         {
             InitializeComponent();
 
-            this.KeyDown += (sender, e) =>
-            {
-                if (e.Key == Key.Enter && DataContext is LoginViewModel vm)
-                {
-                    vm.LoginCommand.Execute(null);
-                }
-            };
         }
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {

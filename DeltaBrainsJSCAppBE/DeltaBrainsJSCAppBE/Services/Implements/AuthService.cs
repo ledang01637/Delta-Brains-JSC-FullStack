@@ -48,6 +48,11 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                     return ApiResponse<LoginRes>.Fail("Tên đăng nhập hoặc mật khẩu không đúng");
                 }
 
+                if(user.Id == 0)
+                {
+                    return ApiResponse<LoginRes>.Fail("Lỗi xác thực người dùng");
+                }
+
                 var token = GenerateJwtToken(user);
 
                 if (token == null)
@@ -128,7 +133,10 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             }
             catch
             {
-                return null;
+                return new User
+                {
+                    Id = 0
+                };
             }
         }
     }
