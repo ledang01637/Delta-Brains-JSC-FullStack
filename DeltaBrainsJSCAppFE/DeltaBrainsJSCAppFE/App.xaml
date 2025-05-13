@@ -14,9 +14,12 @@
 
                 <!-- ToggleButton -->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml"/>
-                
-                <!-- ToggleButton -->
+
+                <!-- ToolBar -->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToolBar.xaml" />
+
+                <!-- DataGrid style -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.DataGrid.xaml" />
 
                 <!-- Custom -->
                 <ResourceDictionary Source="/ResourceXAML/MainResource.xaml" />

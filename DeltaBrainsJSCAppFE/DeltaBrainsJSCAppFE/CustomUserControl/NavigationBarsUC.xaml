@@ -15,7 +15,8 @@
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
                     <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
                                 Foreground="White"
-                                Background="Transparent"/>
+                                Background="Transparent"
+                                 Click="ToggleSliderButton_Click"/>
                     <TextBlock Margin="16,0,0,0"
                              VerticalAlignment="Center"
                              FontSize="16"

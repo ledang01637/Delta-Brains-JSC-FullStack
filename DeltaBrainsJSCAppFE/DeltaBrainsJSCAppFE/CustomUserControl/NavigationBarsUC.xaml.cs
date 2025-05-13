@@ -27,11 +27,25 @@ namespace DeltaBrainsJSCAppFE.CustomUserControl
                 typeof(NavigationBarsUC),
                 new PropertyMetadata("Default Title", OnTitleChanged));
 
+        public static readonly DependencyProperty TargetElementProperty =
+            DependencyProperty.Register(
+                  nameof(TargetElement),
+                  typeof(UIElement),
+                  typeof(NavigationBarsUC),
+                  new PropertyMetadata(null));
+
         public string Title
         {
             get => (string)GetValue(TitleProperty);
             set => SetValue(TitleProperty, value);
         }
+
+        public UIElement TargetElement
+        {
+            get => (UIElement)GetValue(TargetElementProperty);
+            set => SetValue(TargetElementProperty, value);
+        }
+
 
         private static void OnTitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -54,6 +68,16 @@ namespace DeltaBrainsJSCAppFE.CustomUserControl
         {
             Window parentWindow = Window.GetWindow(this);
             parentWindow?.Close();
+        }
+
+        private void ToggleSliderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (TargetElement != null)
+            {
+                TargetElement.Visibility = TargetElement.Visibility == Visibility.Visible
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+            }
         }
     }
 }
