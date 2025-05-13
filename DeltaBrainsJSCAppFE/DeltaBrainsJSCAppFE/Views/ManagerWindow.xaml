@@ -6,12 +6,15 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:DeltaBrainsJSCAppFE.Views"
         xmlns:uc="clr-namespace:DeltaBrainsJSCAppFE.CustomUserControl" 
-        xmlns:converters="clr-namespace:DeltaBrainsJSCAppFE.Handel"
+        xmlns:converters="clr-namespace:DeltaBrainsJSCAppFE.Handel" 
+        xmlns:viewmodels="clr-namespace:DeltaBrainsJSCAppFE.ViewModels" 
+
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize"
         mc:Ignorable="d"
         
+        DataContext="{StaticResource ManagerVM}"
         Title="Quản lý nhân viên" Height="450" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
@@ -145,14 +148,15 @@
                           RowBackground="White"
                           AlternatingRowBackground="#F5F5F5"
                           materialDesign:DataGridAssist.CellPadding="16 8 16 8"
-                          materialDesign:DataGridAssist.ColumnHeaderPadding="16 8 16 8">
+                          materialDesign:DataGridAssist.ColumnHeaderPadding="16 8 16 8"
+                          ItemsSource="{Binding ListTask}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Mã công việc" 
-                                          Binding="{Binding TaskId}" 
+                                          Binding="{Binding Id}" 
                                           Width="*"
                                           ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
                             <DataGridTextColumn Header="Tên công việc" 
-                                          Binding="{Binding TaskName}" 
+                                          Binding="{Binding Title}" 
                                           Width="*"
                                           ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
                             <DataGridTextColumn Header="Nội dung" 
@@ -160,7 +164,7 @@
                                           Width="2*"
                                           ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
                             <DataGridTextColumn Header="Người phụ trách" 
-                                          Binding="{Binding Assignee}" 
+                                          Binding="{Binding AssigneeName}" 
                                           Width="*"
                                           ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
                             

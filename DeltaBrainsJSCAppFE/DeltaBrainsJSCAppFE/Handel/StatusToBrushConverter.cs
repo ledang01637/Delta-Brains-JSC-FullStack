@@ -18,14 +18,12 @@ namespace DeltaBrainsJSCAppFE.Handel
             string status = value.ToString().ToLower();
             switch (status)
             {
-                case "completed":
+                case "hoàn thành":
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4CAF50"));
-                case "in progress":
+                case "đang thực hiện":
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2196F3"));
-                case "pending":
+                case "chưa thực hiện":
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFC107"));
-                case "cancelled":
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F44336"));
                 default:
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9E9E9E"));
             }

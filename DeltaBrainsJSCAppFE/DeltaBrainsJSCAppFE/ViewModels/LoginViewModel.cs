@@ -68,7 +68,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             {
                 var result = await AuthHandel.Login(Username, Password);
 
-                if (result?.IsSuccess != true || result.Data == null || string.IsNullOrEmpty(result.Data.Token))
+                if (!result.IsSuccess)
                 {
                     MessageBox.Show("Sai tài khoản mật khẩu.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
