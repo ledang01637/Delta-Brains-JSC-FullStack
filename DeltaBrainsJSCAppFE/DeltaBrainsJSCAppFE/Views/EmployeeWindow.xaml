@@ -3,9 +3,57 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:DeltaBrainsJSCAppFE.Views"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="NoResize"
         mc:Ignorable="d"
-        Title="EmployeeWindow" Height="450" Width="800">
+        
+        xmlns:uc="clr-namespace:DeltaBrainsJSCAppFE.CustomUserControl"
+        Title="Quản lý công việc" Height="450" Width="800"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+
+
     <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="1,0" EndPoint="1,1">
+                <GradientStop Color="#FF2196F3" Offset="0"/>
+                <GradientStop Color="#FF90CAF9" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0">
+            <uc:NavigationBarsUC Title="Quản lý công việc" />
+        </Grid>
+        <Grid Grid.Row="1">
+            <DataGrid Grid.Row="1"
+                      Margin="10"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Mã công việc" Binding="{Binding TaskId}" Width="*"/>
+                    <DataGridTextColumn Header="Tên công việc" Binding="{Binding TaskName}" Width="*"/>
+                    <DataGridTextColumn Header="Nội dung" Binding="{Binding Description}" Width="2*"/>
+                    <DataGridTextColumn Header="Người phụ trách" Binding="{Binding Assignee}" Width="*"/>
+                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </Grid>
 </Window>

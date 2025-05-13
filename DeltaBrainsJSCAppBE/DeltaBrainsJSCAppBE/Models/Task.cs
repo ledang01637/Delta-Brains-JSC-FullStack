@@ -11,7 +11,9 @@ namespace DeltaBrainsJSCAppBE.Models
         public int AssignedTo { get ; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
-        public Enum.TaskStatus? Status { get; set; }
+
+        [Range(0, 2)]
+        public Enum.TaskStatus Status { get; set; }
         public DateTime? Created { get; set; }
         public DateTime? Updated { get; set;}
 

@@ -23,5 +23,18 @@ namespace DeltaBrainsJSCAppFE.Views
         {
             InitializeComponent();
         }
+        private void HamburgerButton_Click(object sender, RoutedEventArgs e)
+        {
+            //if (Sidebar.Visibility == Visibility.Visible)
+            //{
+            //    Sidebar.Visibility = Visibility.Collapsed;
+            //    Sidebar.Width = 0;
+            //}
+            //else
+            //{
+            //    Sidebar.Visibility = Visibility.Visible;
+            //    Sidebar.Width = 200;
+            //}
+        }
     }
 }

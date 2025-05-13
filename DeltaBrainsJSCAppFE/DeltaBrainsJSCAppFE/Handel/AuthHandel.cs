@@ -13,7 +13,7 @@ namespace DeltaBrainsJSCAppFE.Handel
     {
         private static readonly HttpClient _httpClient = new();
 
-        public static async Task<LoginRes> Login(string username, string password)
+        public static async Task<ApiResponse<LoginRes>> Login(string username, string password)
         {
             try
             {
@@ -25,15 +25,16 @@ namespace DeltaBrainsJSCAppFE.Handel
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return new LoginRes { IsSuccess = false, Message = "Lỗi đăng nhập"};
+                    return new ApiResponse<LoginRes> { IsSuccess = false, Message = "Lỗi đăng nhập" };
                 }
-                var content = await response.Content.ReadFromJsonAsync<LoginRes>();
 
-                return content;
+                var content = await response.Content.ReadFromJsonAsync<ApiResponse<LoginRes>>();
+
+                return new ApiResponse<LoginRes> { IsSuccess = true, Data = content.Data };
             }
             catch (Exception ex)
             {
-                return new LoginRes { IsSuccess = false, Message = ex.Message};
+                return new ApiResponse<LoginRes> { IsSuccess = false, Message = ex.Message };
             }
         }
     }

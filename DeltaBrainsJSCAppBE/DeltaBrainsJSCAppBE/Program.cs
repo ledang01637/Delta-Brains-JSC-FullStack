@@ -29,6 +29,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<IRole, RoleService>();
 builder.Services.AddScoped<IUser, UserService>();
+builder.Services.AddScoped<ITask, TaskService>();
 
 
 builder.Services.AddAutoMapper(typeof(Program));
