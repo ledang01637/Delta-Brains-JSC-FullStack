@@ -6,6 +6,7 @@ using DeltaBrainsJSCAppBE.DTOs.Request;
 using DeltaBrainsJSCAppBE.DTOs.Response;
 using DeltaBrainsJSCAppBE.Models;
 using DeltaBrainsJSCAppBE.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace DeltaBrainsJSCAppBE.Services.Implements
 {
@@ -13,11 +14,13 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
     {
         private readonly DBContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
-        public RoleService(DBContext context, IMapper mapper)
+        public RoleService(DBContext context, IMapper mapper, ILogger logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
         public async Task<ApiResponse<RoleRes>> Create(RoleReq request)
         {
@@ -39,7 +42,8 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             }
             catch(Exception ex)
             {
-                return ApiResponse<RoleRes>.Fail("Lỗi khi thêm: " + ex.Message);
+                _logger.LogError(ex.Message);
+                return ApiResponse<RoleRes>.Error();
             }
 
         }
@@ -49,13 +53,20 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             try
             {
                 var roles = _context.Roles.ToList();
+
+                if (!roles.Any())
+                {
+                    return System.Threading.Tasks.Task.FromResult(ApiResponse<List<RoleRes>>.NoData());
+                }
+
                 var response = _mapper.Map<List<RoleRes>>(roles);
 
                 return System.Threading.Tasks.Task.FromResult(ApiResponse<List<RoleRes>>.Success(response));
             }
             catch (Exception ex)
             {
-                return System.Threading.Tasks.Task.FromResult(ApiResponse<List<RoleRes>>.Fail("Lỗi khi lấy dữ liệu: " + ex.Message));
+                _logger.LogError(ex.Message);
+                return System.Threading.Tasks.Task.FromResult(ApiResponse<List<RoleRes>>.Error());
             }
         }
     }

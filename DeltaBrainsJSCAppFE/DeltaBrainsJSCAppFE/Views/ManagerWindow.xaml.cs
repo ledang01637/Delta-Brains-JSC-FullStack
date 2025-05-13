@@ -23,5 +23,6 @@ namespace DeltaBrainsJSCAppFE.Views
         {
             InitializeComponent();
         }
+
     }
 }

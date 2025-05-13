@@ -14,11 +14,13 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
     {
         private readonly DBContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
-        public UserService(DBContext context, IMapper mapper)
+        public UserService(DBContext context, IMapper mapper, ILogger logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<ApiResponse<UserRes>> Create(UserReq request)
@@ -44,7 +46,8 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             }
             catch (Exception ex)
             {
-                return ApiResponse<UserRes>.Fail("Lỗi khi thêm: " + ex.Message);
+                _logger.LogError(ex.Message);
+                return ApiResponse<UserRes>.Error();
             }
 
         }
@@ -54,13 +57,20 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             try
             {
                 var users = _context.Users.Include(u => u.Role).ToList();
+
+                if (!users.Any())
+                {
+                    return System.Threading.Tasks.Task.FromResult(ApiResponse<List<UserRes>>.NoData());
+                }
+
                 var response = _mapper.Map<List<UserRes>>(users);
 
                 return System.Threading.Tasks.Task.FromResult(ApiResponse<List<UserRes>>.Success(response));
             }
             catch (Exception ex)
             {
-                return System.Threading.Tasks.Task.FromResult(ApiResponse<List<UserRes>>.Fail("Lỗi khi lấy dữ liệu: " + ex.Message));
+                _logger.LogError(ex.Message);
+                return System.Threading.Tasks.Task.FromResult(ApiResponse<List<UserRes>>.Error());
             }
         }
     }

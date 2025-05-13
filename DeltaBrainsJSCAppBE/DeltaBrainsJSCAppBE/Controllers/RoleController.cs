@@ -23,7 +23,7 @@ namespace DeltaBrainsJSCAppBE.Controllers
 
             var response = await _service.Create(request);
 
-            return response.Code == 0 ? Ok(response) : BadRequest(response);
+            return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
 
         [HttpGet("get-list")]
@@ -31,7 +31,7 @@ namespace DeltaBrainsJSCAppBE.Controllers
         {
             var response = await _service.GetAll();
 
-            return response.Code == 0 ? Ok(response) : BadRequest(response);
+            return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
     }
 }

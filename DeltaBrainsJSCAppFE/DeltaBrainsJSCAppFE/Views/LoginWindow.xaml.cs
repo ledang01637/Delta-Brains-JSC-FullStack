@@ -36,7 +36,7 @@ namespace DeltaBrainsJSCAppFE.Views
 
             if (username == "admin" && password == "123")
             {
-                MainWindow mainWindow = new();
+                ManagerWindow mainWindow = new();
                 mainWindow.ShowDialog();
                 this.Close();
             }

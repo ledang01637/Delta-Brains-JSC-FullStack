@@ -8,7 +8,9 @@
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        KeyDown="Window_KeyDown">
+        KeyDown="Window_KeyDown"
+        DataContext="{StaticResource LoginVM}"
+        Name="loginWindow">
 
     <Window.Resources>
         <Style x:Key="ShadowEffect" TargetType="Border">
@@ -72,8 +74,8 @@
                 <Button x:Name="btnLogin" 
                         Content="Đăng nhập" 
                         Height="45"
-                        Background="#FF2196F3"
-                        Foreground="White"
+                        Background="#49a9f5"
+                        Foreground="#000"
                         FontWeight="Bold"
                         BorderThickness="0"
                         Click="BtnLogin_Click"

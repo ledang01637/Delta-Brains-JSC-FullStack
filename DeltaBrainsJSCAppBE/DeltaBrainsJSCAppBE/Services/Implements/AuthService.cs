@@ -10,6 +10,7 @@ using DotNetEnv;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -38,26 +39,35 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
         }
         public ApiResponse<LoginRes> Login(LoginReq request)
         {
-            var user = ValidateUser(request.Username, request.Password);
-
-            if (user == null)
+            try
             {
-                return ApiResponse<LoginRes>.Fail("Tên đăng nhập hoặc mật khẩu không đúng");
+                var user = ValidateUser(request.Username, request.Password);
+
+                if (user == null)
+                {
+                    return ApiResponse<LoginRes>.Fail("Tên đăng nhập hoặc mật khẩu không đúng");
+                }
+
+                var token = GenerateJwtToken(user);
+
+                if (token == null)
+                {
+                    return ApiResponse<LoginRes>.Fail("Lỗi tạo token");
+                }
+
+                return ApiResponse<LoginRes>.Success(new LoginRes
+                {
+                    SuccsessFull = true,
+                    Token = token,
+                    Expiration = DateTime.UtcNow.AddMinutes(75),
+                    Error = null
+                });
             }
-
-            var token = GenerateJwtToken(user);
-
-            if (token == null)
+            catch
             {
-                return ApiResponse<LoginRes>.Fail("Lỗi tạo token");
+                return ApiResponse<LoginRes>.Error();
             }
-
-            return ApiResponse<LoginRes>.Success(new LoginRes
-            {
-                SuccsessFull = true,
-                Token = token,
-                Error = null
-            });
+            
 
         }
 

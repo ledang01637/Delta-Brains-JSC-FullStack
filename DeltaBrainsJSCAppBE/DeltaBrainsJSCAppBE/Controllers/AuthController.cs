@@ -21,7 +21,7 @@ namespace DeltaBrainsJSCAppBE.Controllers
         public IActionResult Login([FromBody] LoginReq request)
         {
             var result = _authService.Login(request);
-            if (result.Code != 0)
+            if (!result.IsSuccess)
             {
                 return Unauthorized(result);
             }
