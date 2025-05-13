@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DeltaBrainsJSCAppFE.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,40 +23,20 @@ namespace DeltaBrainsJSCAppFE.Views
         public LoginWindow()
         {
             InitializeComponent();
+
+            this.KeyDown += (sender, e) =>
+            {
+                if (e.Key == Key.Enter && DataContext is LoginViewModel vm)
+                {
+                    vm.LoginCommand.Execute(null);
+                }
+            };
         }
-        private void BtnLogin_Click(object sender, RoutedEventArgs e)
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            string username = txtUsername.Text.Trim();
-            string password = txtPassword.Password;
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (DataContext is LoginViewModel vm)
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (username == "admin" && password == "123")
-            {
-                ManagerWindow mainWindow = new();
-                mainWindow.ShowDialog();
-                this.Close();
-            }
-            else
-            {
-                MessageBox.Show("Tên đăng nhập hoặc mật khẩu không đúng.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void ForgotPassword_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            MessageBox.Show("Vui lòng liên hệ quản trị viên để đặt lại mật khẩu.", "Thông tin", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                BtnLogin_Click(sender, e);
+                vm.Password = ((PasswordBox)sender).Password;
             }
         }
     }

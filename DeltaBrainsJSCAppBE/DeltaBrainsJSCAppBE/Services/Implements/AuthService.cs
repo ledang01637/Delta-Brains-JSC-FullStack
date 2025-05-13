@@ -25,7 +25,7 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
         private readonly DBContext _context;
         private readonly TokenRequiment jwt;
 
-        public AuthService(IConfiguration configuration, DBContext context)
+        public AuthService(DBContext context)
         {
             _context = context;
             jwt = new()

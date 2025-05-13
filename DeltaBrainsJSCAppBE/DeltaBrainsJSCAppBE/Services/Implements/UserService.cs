@@ -14,9 +14,9 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
     {
         private readonly DBContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(DBContext context, IMapper mapper, ILogger logger)
+        public UserService(DBContext context, IMapper mapper, ILogger<UserService> logger)
         {
             _context = context;
             _mapper = mapper;

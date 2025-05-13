@@ -14,9 +14,9 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
     {
         private readonly DBContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly ILogger<RoleService> _logger;
 
-        public RoleService(DBContext context, IMapper mapper, ILogger logger)
+        public RoleService(DBContext context, IMapper mapper, ILogger<RoleService> logger)
         {
             _context = context;
             _mapper = mapper;
