@@ -80,12 +80,12 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
                 if (!loginResult.IsSuccess || string.IsNullOrEmpty(loginResult.Data?.Token))
                 {
-                    MessageBox.Show("Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản và mật khẩu.",
-                                  "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"{loginResult.Message}",
+                                  "Đăng nhập thất bại", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                var role = GetRoleFromToken(loginResult.Data.Token);
+                var role = GetRoleFromToken.GetRole(loginResult.Data.Token);
 
                 Window newWindow = role switch
                 {
@@ -98,6 +98,8 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                 {
                     newWindow.Show();
                     parentWindow.Close();
+
+                    AuthStorage.SaveToken(loginResult.Data);
                 }
                 else
                 {
@@ -126,23 +128,6 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
         }
 
-        public static string? GetRoleFromToken(string token)
-        {
-            try
-            {
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
-
-                var roleClaim = jwtToken.Claims.FirstOrDefault(c =>
-                    c.Type == ClaimTypes.Role || c.Type.Equals("role", StringComparison.OrdinalIgnoreCase));
-
-                return roleClaim?.Value?.ToLower();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi giải mã token: {ex.Message}", "Lỗi Token", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
-            }
-        }
+        
     }
 }

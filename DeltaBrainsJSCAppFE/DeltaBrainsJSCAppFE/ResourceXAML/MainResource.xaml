@@ -4,4 +4,5 @@
                     <viewmodel:MainViewModel x:Key="MainVM" />
                     <viewmodel:LoginViewModel x:Key="LoginVM" />
                     <viewmodel:ManagerViewModel x:Key="ManagerVM" />
+                    <viewmodel:EmployeeViewModel x:Key="EmployeeVM" />
 </ResourceDictionary>

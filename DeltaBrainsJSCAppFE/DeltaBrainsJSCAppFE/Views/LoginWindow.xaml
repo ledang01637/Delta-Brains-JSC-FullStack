@@ -25,7 +25,8 @@
         </Style>
     </Window.Resources>
     <Window.InputBindings>
-        <KeyBinding Key="Enter" Command="{Binding LoginCommand}" />
+        <KeyBinding Key="Enter" Command="{Binding LoginCommand}" 
+                    CommandParameter="{Binding ElementName=loginWindow}"/>
     </Window.InputBindings>
 
     <Grid>

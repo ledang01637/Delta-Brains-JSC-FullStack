@@ -7,11 +7,12 @@
         xmlns:local="clr-namespace:DeltaBrainsJSCAppFE.Views"
         xmlns:uc="clr-namespace:DeltaBrainsJSCAppFE.CustomUserControl" 
         xmlns:converters="clr-namespace:DeltaBrainsJSCAppFE.Handel" 
-        xmlns:viewmodels="clr-namespace:DeltaBrainsJSCAppFE.ViewModels" 
+        xmlns:viewmodels="clr-namespace:DeltaBrainsJSCAppFE.ViewModels" xmlns:Icon="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
         d:DataContext="{d:DesignInstance Type=viewmodels:ManagerViewModel}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize"
+        Name="managerWindow"
         mc:Ignorable="d"
         
         DataContext="{StaticResource ManagerVM}"
@@ -22,12 +23,7 @@
         TextOptions.TextFormattingMode="Ideal"
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}"
-        >
-
-    <Window.Resources>
-        <converters:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
-    </Window.Resources>
+        FontFamily="{DynamicResource MaterialDesignFont}">
 
     <Grid>
         <Grid.Background>
@@ -51,6 +47,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+
             <!-- Sidebar Navigation -->
             <Border Grid.Column="0" Width="200" 
                     Background="#FF1976D2" 
@@ -63,64 +60,91 @@
                     </Grid.RowDefinitions>
 
                     <!-- Sidebar Menu Items -->
-                    <StackPanel Grid.Row="1" Margin="0 10">
+                    <DockPanel Grid.Row="1" Margin="0 10">
+
                         <Button Style="{StaticResource MaterialDesignFlatButton}"
-                            Content="Dashboard"
-                            Foreground="White"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left"
-                            Padding="16 8">
+                                Content="Đăng xuất"
+                                Foreground="White"
+                                HorizontalAlignment="Center"
+                                Padding="16 8"
+                                DockPanel.Dock="Bottom"
+                                Command="{Binding LogoutCommand}"
+                                CommandParameter="{Binding ElementName=managerWindow}">  
                             <Button.ContentTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="ViewDashboard" 
-                                                           Width="24" Height="24"
-                                                           Foreground="White"/>
+                                        <materialDesign:PackIcon Kind="Logout"
+                                             Width="24" Height="24"
+                                             Foreground="White"/>
                                         <TextBlock Text="{Binding}" Margin="8 0 0 0"
-                                              VerticalAlignment="Center"/>
+                               VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </Button.ContentTemplate>
                         </Button>
 
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
-                            Content="Tasks"
-                            Foreground="White"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left"
-                            Padding="16 8">
-                            <Button.ContentTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="FormatListChecks" 
-                                                           Width="24" Height="24"
-                                                           Foreground="White"/>
-                                        <TextBlock Text="{Binding}" Margin="8 0 0 0"
-                                              VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </Button.ContentTemplate>
-                        </Button>
+                        <StackPanel>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    Content="Dashboard"
+                    Foreground="White"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Padding="16 8">
+                                <Button.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="ViewDashboard"
+                                                 Width="24" Height="24"
+                                                 Foreground="White"/>
+                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
+                                   VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Button.ContentTemplate>
+                            </Button>
 
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
-                            Content="Employees"
-                            Foreground="White"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left"
-                            Padding="16 8">
-                            <Button.ContentTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="AccountGroup" 
-                                                           Width="24" Height="24"
-                                                           Foreground="White"/>
-                                        <TextBlock Text="{Binding}" Margin="8 0 0 0"
-                                              VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </Button.ContentTemplate>
-                        </Button>
-                    </StackPanel>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    Content="Tasks"
+                                    Foreground="White"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Padding="16 8">
+                                <Button.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="FormatListChecks"
+                                                 Width="24" Height="24"
+                                                 Foreground="White"/>
+                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
+                                   VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Button.ContentTemplate>
+                            </Button>
+
+                            <Button 
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Content="Employees"
+                                Foreground="White"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Padding="16 8">
+                                <Button.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="AccountGroup"
+                                                 Width="24" Height="24"
+                                                 Foreground="White"/>
+                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
+                                   VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Button.ContentTemplate>
+                            </Button>
+                        </StackPanel>
+
+                    </DockPanel>
+
                 </Grid>
             </Border>
 
@@ -135,7 +159,70 @@
 
                 <!-- Main Content -->
                 <Grid Grid.Row="1" Margin="10">
-                    <DataGrid x:Name="TasksDataGrid"
+                    <DataGrid RowStyle="{DynamicResource DataGridRowStyle1}" 
+                      ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                      CellStyle="{DynamicResource DataGridCellStyle1}" 
+                      x:Name="TasksDataGrid" 
+                      Style="{DynamicResource DataGridStyle1}"
+                      ItemsSource="{Binding ListTask}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="#" 
+                                        IsReadOnly="True" 
+                                        CanUserResize="False" 
+                                        Width="auto" 
+                                        Binding="{Binding Id}"/>
+                            <DataGridTemplateColumn 
+                        Header="Người phụ trách" 
+                        IsReadOnly="True" 
+                        Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Width="25" Height="25" CornerRadius="50" Margin="0 0 10 0" Background="{Binding BgColor}">
+                                                <TextBlock Text="{Binding Character}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" Margin="0 0 0 1"/>
+                                            </Border>
+
+                                            <TextBlock Text="{Binding AssigneeName}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Tên công việc" Binding="{Binding Title}" IsReadOnly="True" Width="*"/>
+                            <DataGridTextColumn Header="Nội dung" Binding="{Binding Description}" IsReadOnly="True" Width="2*"/>
+                            <DataGridTemplateColumn Header="Trạng thái" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="4" Padding="4 2" 
+                                           Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}}">
+                                            <TextBlock Text="{Binding Status}" 
+                                                 HorizontalAlignment="Center"
+                                                 Foreground="White"
+                                                 FontWeight="SemiBold"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Tùy chọn" IsReadOnly="True" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Style="{StaticResource gridEditButton}">
+                                                <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
+                                            </Button>
+                                            <Button Margin="5 0 0 0" Style="{StaticResource gridRemoveButton}">
+                                                <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+
+
+                <!--<Grid Grid.Row="1" Margin="10">
+                    <DataGrid x:Name="aaaa"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
                           CanUserDeleteRows="False"
@@ -183,10 +270,10 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                </Grid>
+                </Grid>-->
             </Grid>
         </Grid>
 
-        
+
     </Grid>
 </Window>

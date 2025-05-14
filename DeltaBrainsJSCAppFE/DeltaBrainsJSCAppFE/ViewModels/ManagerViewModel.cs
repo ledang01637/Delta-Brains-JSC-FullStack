@@ -1,23 +1,23 @@
 ﻿using DeltaBrainsJSCAppFE.Views;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 using DeltaBrainsJSCAppFE.Models.Response;
 using System.Net.Http;
-using static System.Net.WebRequestMethods;
 using System.Net.Http.Json;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using DeltaBrainsJSCAppFE.Handel;
+using Microsoft.IdentityModel.Tokens;
+using System.Data;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
     public class ManagerViewModel : BaseViewModel
     {
         private static readonly HttpClient _httpClient = new();
+
+        public ICommand ManagerCommand { get; set; }
 
         private bool _isLoading;
 
@@ -27,9 +27,9 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             set { _isLoading = value; OnPropertyChanged(); }
         }
 
-        private ObservableCollection<TaskRes> _listTask;
+        private ObservableCollection<TaskItemViewModel> _listTask;
 
-        public ObservableCollection<TaskRes> ListTask
+        public ObservableCollection<TaskItemViewModel> ListTask
         {
             get => _listTask;
             set
@@ -39,11 +39,20 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
         }
 
-        public ICommand ManagerCommand { get; set; }
-
+        public AsyncRelayCommand<object> LogoutCommand { get; }
 
         public ManagerViewModel()
         {
+
+            LogoutCommand = new AsyncRelayCommand<object>(
+
+                async (p) => await ExecuteLogout());
+
+            if (AppMemory.Instance.CachedTasks?.Any() == true)
+            {
+                ListTask = new ObservableCollection<TaskItemViewModel>(AppMemory.Instance.CachedTasks);
+            }
+
             Init();
         }
 
@@ -60,25 +69,26 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
                 string url = "https://localhost:7089/api/Task/get-list";
 
-                ListTask = new ObservableCollection<TaskRes>();
+                ListTask = new ObservableCollection<TaskItemViewModel>();
 
                 var response = await _httpClient.GetFromJsonAsync<ApiResponse<ObservableCollection<TaskRes>>>(url);
 
                 if (response != null && response.Code == 200)
                 {
-                    foreach(var item in response.Data)
+                    foreach (var item in response.Data)
                     {
-                        ListTask.Add(item);
+                        var vm = new TaskItemViewModel(item);
+                        ListTask.Add(vm);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Lỗi: " + response?.Message);
+                    ShowError(response?.Message ?? "Invalid response format");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi tải danh sách công việc: " + ex.Message);
+                ShowError($"Unexpected error: {ex.Message}");
             }
             finally
             {
@@ -86,6 +96,62 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
         }
 
+        private void ShowError(string message)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            });
+        }
+
+        public Task ExecuteLogout()
+        {
+            try
+            {
+
+                var result = MessageBox.Show("Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    AppMemory.Instance.CachedTasks = null;
+                    AuthStorage.ClearToken();
+
+                    var loginWindow = new LoginWindow();
+                    loginWindow.Show();
+
+                    foreach (Window window in Application.Current.Windows)
+                    {
+                        if (window != loginWindow)
+                        {
+                            window.Close();
+                        }
+                    }
+
+
+                }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                MessageBox.Show($"Lỗi kết nối: {httpEx.Message}",
+                               "Lỗi mạng", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (SecurityTokenException tokenEx)
+            {
+                MessageBox.Show($"Lỗi xác thực: {tokenEx.Message}",
+                               "Lỗi bảo mật", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi không xác định: {ex.Message}",
+                               "Lỗi hệ thống", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+
+            return Task.CompletedTask;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DeltaBrainsJSCAppFE.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,19 +23,7 @@ namespace DeltaBrainsJSCAppFE.Views
         public EmployeeWindow()
         {
             InitializeComponent();
-        }
-        private void HamburgerButton_Click(object sender, RoutedEventArgs e)
-        {
-            //if (Sidebar.Visibility == Visibility.Visible)
-            //{
-            //    Sidebar.Visibility = Visibility.Collapsed;
-            //    Sidebar.Width = 0;
-            //}
-            //else
-            //{
-            //    Sidebar.Visibility = Visibility.Visible;
-            //    Sidebar.Width = 200;
-            //}
+            DataContext = new EmployeeViewModel();
         }
     }
 }
