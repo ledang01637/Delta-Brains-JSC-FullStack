@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using static System.Net.WebRequestMethods;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
@@ -60,15 +61,13 @@ namespace DeltaBrainsJSCAppFE.ViewModels
         {
             if (parentWindow == null)
             {
-                MessageBox.Show("Lỗi hệ thống: Không xác định được cửa sổ cha.",
-                              "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxHelper.ShowWarning("Lỗi hệ thống: Không xác định được cửa sổ.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.",
-                              "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBoxHelper.ShowWarning("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
                 return;
             }
 
@@ -80,12 +79,11 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
                 if (!loginResult.IsSuccess || string.IsNullOrEmpty(loginResult.Data?.Token))
                 {
-                    MessageBox.Show($"{loginResult.Message}",
-                                  "Đăng nhập thất bại", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxHelper.ShowError($"{loginResult.Message}");
                     return;
                 }
 
-                var role = GetRoleFromToken.GetRole(loginResult.Data.Token);
+                var role = GetFromToken.GetRole(loginResult.Data.Token);
 
                 Window newWindow = role switch
                 {
@@ -103,24 +101,16 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show("Tài khoản không có quyền truy cập phù hợp.",
-                                   "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBoxHelper.ShowWarning("Tài khoản không có quyền truy cập phù hợp.");
                 }
             }
             catch (HttpRequestException httpEx)
             {
-                MessageBox.Show($"Lỗi kết nối: {httpEx.Message}",
-                               "Lỗi mạng", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (SecurityTokenException tokenEx)
-            {
-                MessageBox.Show($"Lỗi xác thực: {tokenEx.Message}",
-                               "Lỗi bảo mật", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxHelper.ShowError($"Lỗi kết nối: {httpEx.Message}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi không xác định: {ex.Message}",
-                               "Lỗi hệ thống", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxHelper.ShowError($"Lỗi không xác định: {ex.Message}");
             }
             finally
             {

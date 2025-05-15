@@ -25,7 +25,7 @@ namespace DeltaBrainsJSCAppFE.Handel
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return new ApiResponse<LoginRes> { IsSuccess = false, Message = "Lỗi đăng nhập" };
+                    return new ApiResponse<LoginRes> { IsSuccess = false, Message = "Lỗi server" };
                 }
 
                 var content = await response.Content.ReadFromJsonAsync<ApiResponse<LoginRes>>();

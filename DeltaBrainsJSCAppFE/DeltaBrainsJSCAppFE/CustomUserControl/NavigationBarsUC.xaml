@@ -65,6 +65,48 @@
                         </Style>
                     </Button.Style>
                 </Button>
+
+                <!-- Minimize Button -->
+                <Button x:Name="btnMinimize"
+        DockPanel.Dock="Right"
+        Click="MinimizeButton_Click"
+        ToolTip="Thu nhỏ cửa sổ"
+        Margin="10,0,0,0"
+        Width="32"
+        Height="32">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#FF64B5F6"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                SnapsToDevicePixels="True">
+                                            <materialDesign:PackIcon Kind="WindowMinimize"
+                                                     Width="18"
+                                                     Height="18"
+                                                     VerticalAlignment="Center"
+                                                     HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#FF90CAF9"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#FF42A5F5"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
             </DockPanel>
         </materialDesign:ColorZone>
     </Grid>

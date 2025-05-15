@@ -16,10 +16,9 @@ namespace DeltaBrainsJSCAppBE.Models
         [Required]
         public string? Password { get; set; }
         public string? DeviceToken {  get; set; }
-
-        public virtual ICollection<DeviceSession>? DeviceSessions { get; set; }
-        public virtual ICollection<Notification>? Notifications {  get; set; }
-        public virtual ICollection<Task>? Tasks {  get; set; }
+        public ICollection<Notification>? Notifications {  get; set; }
+        public ICollection<Task>? AssignedTasks { get; set; }
+        public ICollection<Task>? CreatedTasks { get; set; }
         public virtual Role? Role {  get; set; }
     }
 }

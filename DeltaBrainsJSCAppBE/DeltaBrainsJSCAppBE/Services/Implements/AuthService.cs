@@ -76,11 +76,6 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
 
         }
 
-        public ApiResponse<bool> Logout()
-        {
-            return ApiResponse<bool>.Success(true);
-        }
-
         private string? GenerateJwtToken(User user, int accessExpire = 75)
         {
             try

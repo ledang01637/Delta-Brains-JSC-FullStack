@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DeltaBrainsJSCAppFE.ViewModels;
 using DeltaBrainsJSCAppFE.Views;
 
 namespace DeltaBrainsJSCAppFE
@@ -20,6 +21,7 @@ namespace DeltaBrainsJSCAppFE
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = new MainViewModel();
         }
     }
 }

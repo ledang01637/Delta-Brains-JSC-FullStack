@@ -3,9 +3,12 @@ using BTBackendOnline2.Configurations;
 using DeltaBrainJSC.DB;
 using DeltaBrainsJSCAppBE.DTOs.Request;
 using DeltaBrainsJSCAppBE.DTOs.Response;
+using DeltaBrainsJSCAppBE.Hubs;
 using DeltaBrainsJSCAppBE.Models;
 using DeltaBrainsJSCAppBE.Services.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Task = DeltaBrainsJSCAppBE.Models.Task;
 using TaskStatus = DeltaBrainsJSCAppBE.Enum.TaskStatus;
 
@@ -16,57 +19,94 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
         private readonly DBContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<TaskService> _logger;
+        private readonly INotification _notification;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public TaskService(DBContext context, IMapper mapper, ILogger<TaskService> logger)
+
+        public TaskService(DBContext context, IMapper mapper, ILogger<TaskService> logger, INotification notification, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _notification = notification;
+            _hubContext = hubContext;
         }
         public async Task<ApiResponse<TaskRes>> Create(TaskReq request)
         {
             try
             {
-                var lowerStatus = request.Status.ToLower();
-
-                if (lowerStatus != "chưa thực hiện" &&
-                    lowerStatus != "đang thực hiện" &&
-                    lowerStatus != "hoàn thành")
-                {
-                    return ApiResponse<TaskRes>.Fail("Chỉ chấp nhận: chưa thực hiện, đang thực hiện, hoàn thành");
-                }
-
-
                 var task = _mapper.Map<Task>(request);
-
                 task.Created = DateTime.UtcNow;
                 task.Updated = DateTime.UtcNow;
+                task.IsCurrent = true;
 
                 _context.Tasks.Add(task);
-
                 await _context.SaveChangesAsync();
 
-                
+                var notificationReq = new NotificationReq
+                {
+                    UserId = task.UserId,
+                    Title = "Bạn có công việc mới được giao",
+                    Message = $"Công việc '{task.Title}' đã được giao cho bạn.",
+                    RelatedTaskId = task.Id
+                };
+
+                var notificationRes = await CreateNotification(notificationReq);
+
+                if(notificationRes == null) 
+                {
+                    return ApiResponse<TaskRes>.Fail("Lỗi khi tạo và gửi thông báo");
+                }
+
+                await SenDataHubAsync(notificationRes);
 
                 var response = _mapper.Map<TaskRes>(task);
-
-
                 return ApiResponse<TaskRes>.Success(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi tạo task");
+                _logger.LogError(ex, "Lỗi khi tạo Task");
                 return ApiResponse<TaskRes>.Error();
             }
         }
 
+        private async Task<NotificationRes?> CreateNotification(NotificationReq notificationReq)
+        {
+            try
+            {
+                var notification = _mapper.Map<Notification>(notificationReq);
+                notification.CreatedAt = DateTime.UtcNow;
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                return _mapper.Map<NotificationRes>(notification);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi tạo thông báo");
+                return null;
+            }
+        }
+
+        private async System.Threading.Tasks.Task SenDataHubAsync(NotificationRes notificationRes)
+        {
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("SendTaskAssigned", notificationRes);
+            }
+            catch
+            {
+
+            }
+
+        }
 
         public async Task<ApiResponse<List<TaskRes>>> GetAll()
         {
             try
             {
                 var tasks = await _context.Tasks
-                    .Include(t => t.User)
                     .ToListAsync();
 
                 if (!tasks.Any())
@@ -85,7 +125,85 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             }
         }
 
+        public async Task<ApiResponse<List<TaskRes>>> GetTasksByUserId(int userId)
+        {
+            try
+            {
+                var userTasks = await _context.Tasks
+                    .Include(ut => ut.AssignedBy)
+                    .Where(ut => ut.UserId == userId && ut.IsCurrent)
+                    .ToListAsync();
+
+                if (!userTasks.Any())
+                {
+                    return ApiResponse<List<TaskRes>>.NoData();
+                }
+
+                //Lấy danh sách Task từ UserTask
+                var tasks = userTasks
+                    .Select(ut => ut.AssignedBy!)
+                    .ToList();
+
+                var response = _mapper.Map<List<TaskRes>>(tasks);
+
+                return ApiResponse<List<TaskRes>>.Success(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi lấy danh sách công việc theo người dùng");
+                return ApiResponse<List<TaskRes>>.Error();
+            }
+        }
 
 
+        public async Task<ApiResponse<TaskRes>> Update(TaskUpdate request)
+        {
+            try
+            {
+                var exist = ExistTask(request.Id);
+
+                if (exist == null)
+                {
+                    return ApiResponse<TaskRes>.NotFound();
+                }
+
+                var lowerStatus = request?.Status?.ToLower();
+
+                if (lowerStatus != "chưa thực hiện" &&
+                    lowerStatus != "đang thực hiện" &&
+                    lowerStatus != "hoàn thành")
+                {
+                    return ApiResponse<TaskRes>.Fail("Chỉ chấp nhận: chưa thực hiện, đang thực hiện, hoàn thành");
+                }
+
+                var task = _mapper.Map<Task>(request);
+
+                task.Updated = DateTime.UtcNow;
+
+                _context.Tasks.Update(exist);
+
+                await _context.SaveChangesAsync();
+
+                var response = _mapper.Map<TaskRes>(task);
+
+                return ApiResponse<TaskRes>.Success(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return ApiResponse<TaskRes>.Error();
+            }
+        }
+        private Task ExistTask(int id)
+        {
+            var existTask = _context.Tasks.FirstOrDefault(a => a.Id.Equals(id));
+
+            return existTask ?? null;
+        }
+
+        Task<ApiResponse<TaskRes>> ITask.GetTasksByUserId(int userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

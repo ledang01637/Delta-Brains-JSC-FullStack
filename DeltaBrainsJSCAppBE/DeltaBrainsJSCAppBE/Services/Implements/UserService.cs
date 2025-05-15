@@ -36,6 +36,7 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                 user.Password = CompareSHA256.ToSHA256(request.Password);
 
                 _context.Users.Add(user);
+
                 await _context.SaveChangesAsync();
 
                 await _context.Entry(user).Reference(u => u.Role).LoadAsync();

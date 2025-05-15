@@ -2,7 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodels="clr-namespace:DeltaBrainsJSCAppFE.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:LoginViewModel}"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:viewmodel="clr-namespace:DeltaBrainsJSCAppFE.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodel:LoginViewModel}"
         mc:Ignorable="d"
         
         
@@ -10,8 +12,8 @@
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        DataContext="{StaticResource LoginVM}"
         Name="loginWindow">
+
 
     <Window.Resources>
         <Style x:Key="ShadowEffect" TargetType="Border">
@@ -23,7 +25,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <viewmodel:LoginViewModel x:Key="LoginVM" />
     </Window.Resources>
+    
     <Window.InputBindings>
         <KeyBinding Key="Enter" Command="{Binding LoginCommand}" 
                     CommandParameter="{Binding ElementName=loginWindow}"/>

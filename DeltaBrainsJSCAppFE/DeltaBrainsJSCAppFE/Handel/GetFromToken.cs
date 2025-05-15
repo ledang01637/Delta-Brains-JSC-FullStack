@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace DeltaBrainsJSCAppFE.Handel
 {
-    public class GetRoleFromToken
+    public class GetFromToken
     {
         public static string? GetRole(string token)
         {
@@ -25,7 +25,24 @@ namespace DeltaBrainsJSCAppFE.Handel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi giải mã token: {ex.Message}", "Lỗi Token", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxHelper.ShowError($"Lỗi không xác định: {ex.Message}");
+                return null;
+            }
+        }
+        public static string? GetUserId(string token)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type.Equals("Id"));
+
+                return userId?.Value?.ToLower();
+            }
+            catch (Exception ex)
+            {
+                MessageBoxHelper.ShowError($"Lỗi không xác định: {ex.Message}");
                 return null;
             }
         }

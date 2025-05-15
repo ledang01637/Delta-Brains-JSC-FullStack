@@ -11,12 +11,11 @@ namespace DeltaBrainsJSCAppBE.AutoMapper
         public TaskMapper()
         {
             CreateMap<TaskReq, Task>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => GetEnumStatus(src.Status)));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => GetEnumStatus("chưa thực hiện")));
 
-            CreateMap<Task,TaskRes>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => GetStatusString(src.Status)))
-            .ForMember(dest => dest.AssigneeName, opt => opt.MapFrom(src => src.User != null ? src.User.Name : null));
+            CreateMap<Task, TaskRes>().ForMember(dest => dest.Status, opt => opt.MapFrom(src => GetStatusString(src.Status)));
         }
+
 
         private static TaskStatus GetEnumStatus(string status)
         {

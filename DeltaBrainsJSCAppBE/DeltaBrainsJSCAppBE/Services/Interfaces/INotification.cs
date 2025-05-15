@@ -1,16 +1,17 @@
 ﻿using BTBackendOnline2.Configurations;
 using DeltaBrainsJSCAppBE.DTOs.Request;
 using DeltaBrainsJSCAppBE.DTOs.Response;
+using DeltaBrainsJSCAppBE.Models;
 
 namespace DeltaBrainsJSCAppBE.Services.Interfaces
 {
-    public interface IAuth
+    public interface INotification
     {
         /// <summary>
-        /// Đăng nhập
+        /// Tạo thông báo
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        ApiResponse<LoginRes> Login(LoginReq request);
+        Task<ApiResponse<NotificationRes>> Create(NotificationReq request);
     }
 }

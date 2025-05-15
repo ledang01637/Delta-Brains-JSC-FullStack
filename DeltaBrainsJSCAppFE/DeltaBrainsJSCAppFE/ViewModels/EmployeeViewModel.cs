@@ -12,6 +12,8 @@ using System.Windows;
 using System.Net.Http.Json;
 using DeltaBrainsJSCAppFE.Handel;
 using System.Diagnostics;
+using DeltaBrainsJSCAppFE.Views;
+using System.Windows.Markup;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
@@ -39,14 +41,12 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
         }
 
-
-
-        public ICommand ManagerCommand { get; set; }
+        public ICommand EmployeeCommand { get; set; }
 
 
         public EmployeeViewModel()
         {
-            Init();
+            EmployeeCommand = new RelayCommand<Window>((p) => { return true; }, (p) => Init());
         }
 
         private async void Init()
@@ -60,15 +60,53 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             {
                 IsLoading = true;
 
+                var authLogin = AuthStorage.LoadToken();
+
+                int userId;
+
+                if (authLogin != null && !string.IsNullOrEmpty(authLogin.Token) && AuthStorage.IsTokenValid(authLogin))
+                {
+                    var _userId = GetFromToken.GetUserId(authLogin.Token);
+
+                    if(!string.IsNullOrEmpty(_userId))
+                    {
+                        userId = int.Parse(_userId);
+                    }
+                    else
+                    {
+                        MessageBoxHelper.ShowError("Lỗi kiểm tra thông tin người dùng");
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBoxHelper.ShowError("Lỗi xác thực người dùng vui lòng dăng nhập lại!");
+
+                    var loginWindow = new LoginWindow();
+                    loginWindow.Show();
+
+                    foreach (Window window in Application.Current.Windows)
+                    {
+                        if (window != loginWindow)
+                        {
+                            window.Close();
+                        }
+                    }
+                    return;
+                }
+
                 string url = "https://localhost:7089/api/Task/get-list";
 
                 ListTask = new ObservableCollection<TaskItemViewModel>();
 
-                var response = await _httpClient.GetFromJsonAsync<ApiResponse<ObservableCollection<TaskRes>>>(url);
+                var response = await _httpClient.PostAsJsonAsync(url, userId);
 
-                if (response != null && response.Code == 200)
+                if (response.IsSuccessStatusCode)
                 {
-                    foreach (var item in response.Data)
+
+                    var data = await response.Content.ReadFromJsonAsync<ApiResponse<ObservableCollection<TaskRes>>>();
+
+                    foreach (var item in data.Data)
                     {
                         var vm = new TaskItemViewModel(item);
                         ListTask.Add(vm);
@@ -76,12 +114,12 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show("Lỗi: " + response?.Message);
+                    MessageBoxHelper.ShowError("Lỗi server");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi tải danh sách công việc: " + ex.Message);
+                MessageBoxHelper.ShowError($"Lỗi không xác định: {ex.Message}");
             }
             finally
             {

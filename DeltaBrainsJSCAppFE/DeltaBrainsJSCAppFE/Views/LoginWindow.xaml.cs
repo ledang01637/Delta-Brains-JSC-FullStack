@@ -23,7 +23,7 @@ namespace DeltaBrainsJSCAppFE.Views
         public LoginWindow()
         {
             InitializeComponent();
-
+            this.DataContext = new LoginViewModel();
         }
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {

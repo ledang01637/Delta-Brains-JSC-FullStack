@@ -30,6 +30,7 @@ builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<IRole, RoleService>();
 builder.Services.AddScoped<IUser, UserService>();
 builder.Services.AddScoped<ITask, TaskService>();
+builder.Services.AddScoped<INotification, NotificationService>();
 
 
 builder.Services.AddAutoMapper(typeof(Program));
@@ -99,8 +100,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapHub<TaskHub>("/hubs/task");
-app.MapHub<NotificationHub>("/hubs/notification");
+app.MapHub<NotificationHub>("/hubs/task");
 
 
 app.MapControllers();

@@ -18,5 +18,24 @@ namespace DeltaBrainsJSCAppBE.Services.Interfaces
         /// </summary
         /// <returns></returns>
         Task<ApiResponse<List<TaskRes>>> GetAll();
+
+
+        /// <summary>
+        /// Cập nhật Task
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<ApiResponse<TaskRes>> Update(TaskUpdate request);
+
+        /// <summary>
+        /// Lấy công việc của một 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+
+        Task<ApiResponse<TaskRes>> GetTasksByUserId(int userId);
+
+
     }
+
 }

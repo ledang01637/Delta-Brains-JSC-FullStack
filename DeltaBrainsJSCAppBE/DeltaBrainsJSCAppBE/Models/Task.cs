@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DeltaBrainsJSCAppBE.Models
 {
@@ -7,16 +8,26 @@ namespace DeltaBrainsJSCAppBE.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
-        public int AssignedTo { get ; set; }
+
+        //Người phụ trách cv
+        public int UserId { get ; set; }
+
+        //Người giao cv
+        public int AssignedBy { get ; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
+        public bool IsCurrent {  get; set; }
 
         [Range(0, 2)]
         public Enum.TaskStatus Status { get; set; }
         public DateTime? Created { get; set; }
         public DateTime? Updated { get; set;}
 
-        public virtual User? User {  get; set; }
+        [ForeignKey(nameof(UserId))]
+        public virtual User? Assignee { get; set; }
+
+        [ForeignKey(nameof(AssignedBy))]
+        public virtual User? AssignedByUser { get; set; }
+
     }
 }

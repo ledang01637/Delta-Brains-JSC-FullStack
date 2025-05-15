@@ -7,15 +7,14 @@
         xmlns:local="clr-namespace:DeltaBrainsJSCAppFE.Views"
         xmlns:uc="clr-namespace:DeltaBrainsJSCAppFE.CustomUserControl" 
         xmlns:converters="clr-namespace:DeltaBrainsJSCAppFE.Handel" 
-        xmlns:viewmodels="clr-namespace:DeltaBrainsJSCAppFE.ViewModels" xmlns:Icon="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
-        d:DataContext="{d:DesignInstance Type=viewmodels:ManagerViewModel}"
+        xmlns:viewmodel="clr-namespace:DeltaBrainsJSCAppFE.ViewModels" 
+        xmlns:Icon="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize"
         Name="managerWindow"
         mc:Ignorable="d"
         
-        DataContext="{StaticResource ManagerVM}"
         Title="Quản lý nhân viên" Height="450" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
@@ -24,6 +23,10 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}">
+
+    <Window.Resources>
+        <viewmodel:ManagerViewModel x:Key="ManagerVM" />
+    </Window.Resources>
 
     <Grid>
         <Grid.Background>
@@ -219,58 +222,6 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
-
-
-                <!--<Grid Grid.Row="1" Margin="10">
-                    <DataGrid x:Name="aaaa"
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          SelectionUnit="FullRow"
-                          IsReadOnly="True"
-                          HeadersVisibility="Column"
-                          GridLinesVisibility="None"
-                          BorderThickness="0"
-                          Background="Transparent"
-                          RowBackground="White"
-                          AlternatingRowBackground="#F5F5F5"
-                          materialDesign:DataGridAssist.CellPadding="16 8 16 8"
-                          materialDesign:DataGridAssist.ColumnHeaderPadding="16 8 16 8"
-                          ItemsSource="{Binding ListTask}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Mã công việc" 
-                                          Binding="{Binding Id}" 
-                                          Width="*"
-                                          ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
-                            <DataGridTextColumn Header="Tên công việc" 
-                                          Binding="{Binding Title}" 
-                                          Width="*"
-                                          ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
-                            <DataGridTextColumn Header="Nội dung" 
-                                          Binding="{Binding Description}" 
-                                          Width="2*"
-                                          ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
-                            <DataGridTextColumn Header="Người phụ trách" 
-                                          Binding="{Binding AssigneeName}" 
-                                          Width="*"
-                                          ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
-                            
-                            <DataGridTemplateColumn Header="Trạng thái" Width="*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Border CornerRadius="4" Padding="4 2" 
-                                           Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}}">
-                                            <TextBlock Text="{Binding Status}" 
-                                                 HorizontalAlignment="Center"
-                                                 Foreground="White"
-                                                 FontWeight="SemiBold"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>-->
             </Grid>
         </Grid>
 

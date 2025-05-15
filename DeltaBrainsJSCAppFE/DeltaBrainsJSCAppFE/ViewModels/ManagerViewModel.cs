@@ -10,14 +10,13 @@ using System.Collections.ObjectModel;
 using DeltaBrainsJSCAppFE.Handel;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
+using static System.Net.WebRequestMethods;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
     public class ManagerViewModel : BaseViewModel
     {
         private static readonly HttpClient _httpClient = new();
-
-        public ICommand ManagerCommand { get; set; }
 
         private bool _isLoading;
 
@@ -83,12 +82,12 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                 }
                 else
                 {
-                    ShowError(response?.Message ?? "Invalid response format");
+                    MessageBoxHelper.ShowError("Lỗi server");
                 }
             }
             catch (Exception ex)
             {
-                ShowError($"Unexpected error: {ex.Message}");
+                MessageBoxHelper.ShowError(ex.Message);
             }
             finally
             {
@@ -96,20 +95,12 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
         }
 
-        private void ShowError(string message)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            });
-        }
-
         public Task ExecuteLogout()
         {
             try
             {
 
-                var result = MessageBox.Show("Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var result = MessageBoxHelper.ShowQuestion("Bạn có muốn đăng xuất?");
 
                 if (result == MessageBoxResult.Yes)
                 {
@@ -132,18 +123,11 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
             catch (HttpRequestException httpEx)
             {
-                MessageBox.Show($"Lỗi kết nối: {httpEx.Message}",
-                               "Lỗi mạng", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (SecurityTokenException tokenEx)
-            {
-                MessageBox.Show($"Lỗi xác thực: {tokenEx.Message}",
-                               "Lỗi bảo mật", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxHelper.ShowError($"Lỗi kết nối: {httpEx.Message}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi không xác định: {ex.Message}",
-                               "Lỗi hệ thống", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxHelper.ShowError($"Lỗi không xác định: {ex.Message}");
             }
             finally
             {

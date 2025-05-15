@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeltaBrainsJSCAppBE.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20250512092412_Init")]
+    [Migration("20250515154639_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,33 +23,6 @@ namespace DeltaBrainsJSCAppBE.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("DeltaBrainsJSCAppBE.Models.DeviceSession", b =>
-                {
-                    b.Property<int>("SessionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SessionId"), 1L, 1);
-
-                    b.Property<string>("ConnectionId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsConnected")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("SessionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("DeviceSessions");
-                });
 
             modelBuilder.Entity("DeltaBrainsJSCAppBE.Models.Notification", b =>
                 {
@@ -66,10 +39,18 @@ namespace DeltaBrainsJSCAppBE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("RelatedTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RelatedTaskId");
 
                     b.HasIndex("UserId");
 
@@ -102,7 +83,7 @@ namespace DeltaBrainsJSCAppBE.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AssignedTo")
+                    b.Property<int>("AssignedBy")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("Created")
@@ -111,7 +92,10 @@ namespace DeltaBrainsJSCAppBE.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Status")
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -122,9 +106,14 @@ namespace DeltaBrainsJSCAppBE.Migrations
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedTo");
+                    b.HasIndex("AssignedBy");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Tasks");
                 });
@@ -162,63 +151,71 @@ namespace DeltaBrainsJSCAppBE.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("RoleId")
-                        .IsUnique();
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("DeltaBrainsJSCAppBE.Models.DeviceSession", b =>
-                {
-                    b.HasOne("DeltaBrainsJSCAppBE.Models.User", "User")
-                        .WithMany("DeviceSessions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DeltaBrainsJSCAppBE.Models.Notification", b =>
                 {
+                    b.HasOne("DeltaBrainsJSCAppBE.Models.Task", "Task")
+                        .WithMany()
+                        .HasForeignKey("RelatedTaskId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("DeltaBrainsJSCAppBE.Models.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Task");
+
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("DeltaBrainsJSCAppBE.Models.Task", b =>
                 {
-                    b.HasOne("DeltaBrainsJSCAppBE.Models.User", "User")
-                        .WithMany("Tasks")
-                        .HasForeignKey("AssignedTo")
+                    b.HasOne("DeltaBrainsJSCAppBE.Models.User", "AssignedByUser")
+                        .WithMany("CreatedTasks")
+                        .HasForeignKey("AssignedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("DeltaBrainsJSCAppBE.Models.User", "Assignee")
+                        .WithMany("AssignedTasks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssignedByUser");
+
+                    b.Navigation("Assignee");
                 });
 
             modelBuilder.Entity("DeltaBrainsJSCAppBE.Models.User", b =>
                 {
                     b.HasOne("DeltaBrainsJSCAppBE.Models.Role", "Role")
-                        .WithOne()
-                        .HasForeignKey("DeltaBrainsJSCAppBE.Models.User", "RoleId")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("DeltaBrainsJSCAppBE.Models.Role", b =>
+                {
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("DeltaBrainsJSCAppBE.Models.User", b =>
                 {
-                    b.Navigation("DeviceSessions");
+                    b.Navigation("AssignedTasks");
+
+                    b.Navigation("CreatedTasks");
 
                     b.Navigation("Notifications");
-
-                    b.Navigation("Tasks");
                 });
 #pragma warning restore 612, 618
         }
