@@ -91,15 +91,7 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
 
         private async System.Threading.Tasks.Task SenDataHubAsync(NotificationRes notificationRes)
         {
-            try
-            {
-                await _hubContext.Clients.All.SendAsync("SendTaskAssigned", notificationRes);
-            }
-            catch
-            {
-
-            }
-
+            await _hubContext.Clients.All.SendAsync("SendTaskAssigned", notificationRes);
         }
 
         public async Task<ApiResponse<List<TaskRes>>> GetAll()
@@ -107,7 +99,9 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             try
             {
                 var tasks = await _context.Tasks
-                    .ToListAsync();
+                        .Include(ut => ut.Assignee)
+                        .Include(ut => ut.AssignedByUser)
+                        .ToListAsync();
 
                 if (!tasks.Any())
                 {
@@ -129,20 +123,15 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
         {
             try
             {
-                var userTasks = await _context.Tasks
-                    .Include(ut => ut.AssignedBy)
+                var tasks = await _context.Tasks
+                    .Include(ut => ut.Assignee)
                     .Where(ut => ut.UserId == userId && ut.IsCurrent)
                     .ToListAsync();
 
-                if (!userTasks.Any())
+                if (!tasks.Any())
                 {
                     return ApiResponse<List<TaskRes>>.NoData();
                 }
-
-                //Lấy danh sách Task từ UserTask
-                var tasks = userTasks
-                    .Select(ut => ut.AssignedBy!)
-                    .ToList();
 
                 var response = _mapper.Map<List<TaskRes>>(tasks);
 
@@ -154,56 +143,42 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                 return ApiResponse<List<TaskRes>>.Error();
             }
         }
-
-
-        public async Task<ApiResponse<TaskRes>> Update(TaskUpdate request)
+        public async Task<ApiResponse<TaskRes>> Update(TaskReq request, int id)
         {
             try
             {
-                var exist = ExistTask(request.Id);
+                var exist = await ExistTask(id);
 
                 if (exist == null)
                 {
                     return ApiResponse<TaskRes>.NotFound();
                 }
 
-                var lowerStatus = request?.Status?.ToLower();
+                _mapper.Map(request, exist);
 
-                if (lowerStatus != "chưa thực hiện" &&
-                    lowerStatus != "đang thực hiện" &&
-                    lowerStatus != "hoàn thành")
-                {
-                    return ApiResponse<TaskRes>.Fail("Chỉ chấp nhận: chưa thực hiện, đang thực hiện, hoàn thành");
-                }
-
-                var task = _mapper.Map<Task>(request);
-
-                task.Updated = DateTime.UtcNow;
+                exist.Updated = DateTime.UtcNow;
+                exist.IsCurrent = true;
 
                 _context.Tasks.Update(exist);
-
                 await _context.SaveChangesAsync();
 
-                var response = _mapper.Map<TaskRes>(task);
-
+                var response = _mapper.Map<TaskRes>(exist);
                 return ApiResponse<TaskRes>.Success(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, "Lỗi khi cập nhật task");
                 return ApiResponse<TaskRes>.Error();
             }
         }
-        private Task ExistTask(int id)
-        {
-            var existTask = _context.Tasks.FirstOrDefault(a => a.Id.Equals(id));
 
-            return existTask ?? null;
+        private async Task<DeltaBrainsJSCAppBE.Models.Task?> ExistTask(int id)
+        {
+            return await _context.Tasks
+                .Include(ut => ut.Assignee)
+                .Include(ut => ut.AssignedByUser)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        Task<ApiResponse<TaskRes>> ITask.GetTasksByUserId(int userId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

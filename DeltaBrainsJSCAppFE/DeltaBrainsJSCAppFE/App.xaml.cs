@@ -1,11 +1,8 @@
 ﻿using DeltaBrainsJSCAppFE.Handel;
+using DeltaBrainsJSCAppFE.ViewModels;
 using DeltaBrainsJSCAppFE.Views;
-using Microsoft.IdentityModel.Tokens;
-using System.Configuration;
-using System.Data;
 using System.Net.Http;
 using System.Windows;
-using static System.Net.WebRequestMethods;
 
 namespace DeltaBrainsJSCAppFE
 {
@@ -16,7 +13,7 @@ namespace DeltaBrainsJSCAppFE
     {
         //private void Application_Startup(object sender, StartupEventArgs e)
         //{
-        //    var mainWindow = new MainWindow();
+        //    var mainWindow = new ManagerWindow();
         //    mainWindow.ShowDialog();
         //}
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -26,7 +23,6 @@ namespace DeltaBrainsJSCAppFE
             if (authLogin != null && !string.IsNullOrEmpty(authLogin.Token) && AuthStorage.IsTokenValid(authLogin))
             {
                 var window = CheckRole(authLogin.Token);
-
                 window?.Show();
             }
             else

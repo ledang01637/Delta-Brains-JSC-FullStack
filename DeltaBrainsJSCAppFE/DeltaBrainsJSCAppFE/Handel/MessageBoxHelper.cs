@@ -24,6 +24,7 @@ namespace DeltaBrainsJSCAppFE.Handel
             Show(message, "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+
         public static MessageBoxResult ShowQuestion(string message)
         {
             if (!Application.Current.Dispatcher.CheckAccess())

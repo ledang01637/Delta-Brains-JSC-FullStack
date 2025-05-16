@@ -1,4 +1,5 @@
-﻿using DeltaBrainsJSCAppFE.ViewModels;
+﻿using DeltaBrainsJSCAppFE.Models.Response;
+using DeltaBrainsJSCAppFE.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,24 @@ using System.Windows.Shapes;
 namespace DeltaBrainsJSCAppFE.Views
 {
     /// <summary>
-    /// Interaction logic for EmployeeWindow.xaml
+    /// Interaction logic for TaskWindow.xaml
     /// </summary>
-    public partial class EmployeeWindow : Window
+    public partial class TaskWindow : Window
     {
-        public EmployeeWindow()
+        public TaskWindow(TaskRes task = null)
         {
             InitializeComponent();
-            this.DataContext = new EmployeeViewModel();
+
+            if (task == null)
+                DataContext = new TaskViewModel();
+            else
+                DataContext = new TaskViewModel(task);
+        }
+
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

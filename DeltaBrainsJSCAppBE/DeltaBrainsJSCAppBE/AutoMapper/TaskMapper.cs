@@ -13,7 +13,11 @@ namespace DeltaBrainsJSCAppBE.AutoMapper
             CreateMap<TaskReq, Task>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => GetEnumStatus("chưa thực hiện")));
 
-            CreateMap<Task, TaskRes>().ForMember(dest => dest.Status, opt => opt.MapFrom(src => GetStatusString(src.Status)));
+            CreateMap<Task, TaskRes>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => GetStatusString(src.Status)))
+                .ForMember(dest => dest.AssigneeName, opt => opt.MapFrom(src => src.Assignee != null ? src.Assignee.Name : string.Empty))
+                .ForMember(dest => dest.AssignedBy, opt => opt.MapFrom(src => src.AssignedByUser != null ? src.AssignedByUser.Name : string.Empty));
+
         }
 
 

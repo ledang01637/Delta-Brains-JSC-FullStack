@@ -37,32 +37,23 @@ namespace DeltaBrainsJSCAppBE.Controllers
 
             return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
-
-        [HttpPost("update-task")]
-        public async Task<IActionResult> AssignTask([FromBody] TaskUpdate request)
+        [HttpPost("get-task-by-userId")]
+        public async Task<IActionResult> GetTasksByUserId([FromBody] int userId)
         {
-            if (!ModelState.IsValid)
-                return BadRequest("Dữ liệu không hợp lệ.");
-
-            var response = await _service.Update(request);
+            var response = await _service.GetTasksByUserId(userId);
 
             return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
 
-        //[HttpPost("assign")]
-        //public async Task<IActionResult> AssignTask(TaskAssignmentDto dto)
-        //{
-        //    // Lưu dữ liệu vào DB...
+        [HttpPut("update-task/{id}")]
+        public async Task<IActionResult> Update(int id ,[FromBody] TaskUpdate request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Dữ liệu không hợp lệ.");
 
-        //    // Gửi sự kiện realtime tới người dùng được gán
-        //    await _hubContext.Clients.User(dto.AssignedUserId)
-        //        .SendAsync("TaskAssigned", new
-        //        {
-        //            TaskId = dto.TaskId,
-        //            Message = "Bạn được gán một công việc mới!"
-        //        });
+            var response = await _service.Update(request, id);
 
-        //    return Ok();
-        //}
+             return response.IsSuccess ? Ok(response) : BadRequest(response);
+        }
     }
 }

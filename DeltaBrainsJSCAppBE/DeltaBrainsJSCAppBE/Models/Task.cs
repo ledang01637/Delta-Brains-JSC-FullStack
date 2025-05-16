@@ -8,11 +8,7 @@ namespace DeltaBrainsJSCAppBE.Models
     {
         [Key]
         public int Id { get; set; }
-
-        //Người phụ trách cv
         public int UserId { get ; set; }
-
-        //Người giao cv
         public int AssignedBy { get ; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }

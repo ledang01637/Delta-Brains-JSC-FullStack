@@ -11,6 +11,9 @@ using DeltaBrainsJSCAppFE.Handel;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using static System.Net.WebRequestMethods;
+using DeltaBrainsJSCAppFE.Models;
+using DeltaBrainsJSCAppFE.Models.Request;
+using System.Diagnostics;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
@@ -39,10 +42,16 @@ namespace DeltaBrainsJSCAppFE.ViewModels
         }
 
         public AsyncRelayCommand<object> LogoutCommand { get; }
+        public AsyncRelayCommand<object> ManagerCommand { get; }
+        public AsyncRelayCommand<object> AddNewCommand { get; }
+        public AsyncRelayCommand<object> EdiCommand { get; }
 
         public ManagerViewModel()
         {
-
+            ListTask = new ObservableCollection<TaskItemViewModel>();
+            ManagerCommand = new AsyncRelayCommand<object>((p) => Init());
+            AddNewCommand = new AsyncRelayCommand<object>((p) => AddNew());
+            EdiCommand = new AsyncRelayCommand<object>((p) => Edit(p as TaskItemViewModel));
             LogoutCommand = new AsyncRelayCommand<object>(
 
                 async (p) => await ExecuteLogout());
@@ -51,11 +60,9 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             {
                 ListTask = new ObservableCollection<TaskItemViewModel>(AppMemory.Instance.CachedTasks);
             }
-
-            Init();
         }
 
-        private async void Init()
+        private async Task Init()
         {
             await GetTasks();
         }
@@ -65,20 +72,16 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             try
             {
                 IsLoading = true;
+                ListTask.Clear();
 
                 string url = "https://localhost:7089/api/Task/get-list";
-
-                ListTask = new ObservableCollection<TaskItemViewModel>();
 
                 var response = await _httpClient.GetFromJsonAsync<ApiResponse<ObservableCollection<TaskRes>>>(url);
 
                 if (response != null && response.Code == 200)
                 {
                     foreach (var item in response.Data)
-                    {
-                        var vm = new TaskItemViewModel(item);
-                        ListTask.Add(vm);
-                    }
+                        ListTask.Add(new TaskItemViewModel(item));
                 }
                 else
                 {
@@ -135,6 +138,53 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
 
             return Task.CompletedTask;
+        }
+        public async Task AddNew()
+        {
+            var taskWindow = new TaskWindow();
+
+            if (taskWindow.DataContext is TaskViewModel vm)
+            {
+                EventHandler? handler = null;
+                handler = async (s, args) =>
+                {
+                    vm.TaskSaved -= handler; 
+                    await GetTasks();
+                };
+
+                vm.TaskSaved += handler;
+                taskWindow.ShowDialog();
+            }
+            else
+            {
+                MessageBoxHelper.ShowError("Lỗi khởi tạo view model");
+                taskWindow.Close();
+            }
+        }
+
+        public async Task Edit(TaskItemViewModel taskItem)
+        {
+            if (taskItem?.Task == null)
+            {
+                MessageBoxHelper.ShowError("Dữ liệu task không hợp lệ");
+                return;
+            }
+
+            var taskWindow = new TaskWindow(taskItem.Task);
+
+            if (taskWindow.DataContext is TaskViewModel vm)
+            {
+                EventHandler? handler = null;
+                handler = async (s, args) =>
+                {
+                    vm.TaskSaved -= handler;
+                    await GetTasks();
+                };
+
+                vm.TaskSaved += handler;
+            }
+
+            taskWindow.ShowDialog();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

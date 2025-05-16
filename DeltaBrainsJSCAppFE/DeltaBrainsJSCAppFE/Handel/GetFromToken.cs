@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -29,22 +30,43 @@ namespace DeltaBrainsJSCAppFE.Handel
                 return null;
             }
         }
-        public static string? GetUserId(string token)
+        public static int GetUserId()
         {
             try
             {
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
+                var authLogin = AuthStorage.LoadToken();
 
-                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type.Equals("Id"));
+                if (authLogin != null && !string.IsNullOrEmpty(authLogin.Token) && AuthStorage.IsTokenValid(authLogin))
+                {
 
-                return userId?.Value?.ToLower();
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadJwtToken(authLogin.Token);
+
+                    var value = jwtToken.Claims.FirstOrDefault(c => c.Type.Equals("Id"));
+
+                    if (!string.IsNullOrEmpty(value?.Value?.ToLower()))
+                    {
+                        var userId = value?.Value?.ToLower();
+
+                        if (string.IsNullOrEmpty(userId))
+                        {
+                            return 0;
+                        }
+                        return int.Parse(userId);
+                    } 
+                    else
+                        return 0;
+                }
+                return 0;
+                
             }
             catch (Exception ex)
             {
                 MessageBoxHelper.ShowError($"Lỗi không xác định: {ex.Message}");
-                return null;
+                return 0;
             }
         }
+
+
     }
 }
