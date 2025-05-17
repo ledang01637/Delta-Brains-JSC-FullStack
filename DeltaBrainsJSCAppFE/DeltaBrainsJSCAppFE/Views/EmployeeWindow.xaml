@@ -10,7 +10,7 @@
         xmlns:uc="clr-namespace:DeltaBrainsJSCAppFE.CustomUserControl" 
         xmlns:Icon="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material" 
         xmlns:viewmodel="clr-namespace:DeltaBrainsJSCAppFE.ViewModels" 
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         Name="employeeWindow"
         d:DataContext="{d:DesignInstance Type=viewmodel:EmployeeViewModel}"
         
@@ -26,6 +26,13 @@
     <Window.Resources>
         <viewmodel:EmployeeViewModel x:Key="EmployeeVM" />
     </Window.Resources>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding EmployeeCommand}">
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 
     <Grid>
         <Grid.Background>
@@ -84,6 +91,67 @@
                                 </DataTemplate>
                             </Button.ContentTemplate>
                         </Button>
+
+                        <StackPanel>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    Content="Dashboard"
+                    Foreground="White"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Padding="16 8">
+                                <Button.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="ViewDashboard"
+                                                 Width="24" Height="24"
+                                                 Foreground="White"/>
+                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
+                                   VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Button.ContentTemplate>
+                            </Button>
+
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    Content="Tasks"
+                                    Foreground="White"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Padding="16 8">
+                                <Button.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="FormatListChecks"
+                                                 Width="24" Height="24"
+                                                 Foreground="White"/>
+                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
+                                   VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Button.ContentTemplate>
+                            </Button>
+
+                            <Button 
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Content="Employees"
+                                Foreground="White"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Padding="16 8">
+                                <Button.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="AccountGroup"
+                                                 Width="24" Height="24"
+                                                 Foreground="White"/>
+                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
+                                   VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Button.ContentTemplate>
+                            </Button>
+                        </StackPanel>
+
                     </DockPanel>
 
                 </Grid>

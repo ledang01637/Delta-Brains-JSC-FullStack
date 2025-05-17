@@ -3,6 +3,8 @@ using DeltaBrainsJSCAppFE.ViewModels;
 using DeltaBrainsJSCAppFE.Views;
 using System.Net.Http;
 using System.Windows;
+using CommunityToolkit.WinUI.Notifications;
+using DeltaBrainsJSCAppFE.Notification;
 
 namespace DeltaBrainsJSCAppFE
 {
@@ -11,11 +13,14 @@ namespace DeltaBrainsJSCAppFE
     /// </summary>
     public partial class App : Application
     {
-        //private void Application_Startup(object sender, StartupEventArgs e)
-        //{
-        //    var mainWindow = new ManagerWindow();
-        //    mainWindow.ShowDialog();
-        //}
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            SendToastNotification.Callback();
+
+        }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             var authLogin = AuthStorage.LoadToken();

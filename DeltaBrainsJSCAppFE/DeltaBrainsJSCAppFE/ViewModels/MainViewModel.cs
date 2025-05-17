@@ -133,7 +133,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
         private void SetupHubEvents()
         {
-            _ = _connection.On<NotificationRes>("SendTaskAssigned", async (data) =>
+            _ = _connection.On<NotificationRes>("TaskAssigned", async (data) =>
             {
                 Notification = data;
                 Message = Notification.Message;

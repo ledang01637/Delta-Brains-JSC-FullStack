@@ -1,4 +1,5 @@
 ﻿using DeltaBrainsJSCAppBE.DTOs.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace DeltaBrainsJSCAppBE.Hubs
@@ -13,14 +14,14 @@ namespace DeltaBrainsJSCAppBE.Hubs
         {
             return base.OnDisconnectedAsync(exception);
         }
-        public async Task SendTaskAssigned(string userId, NotificationRes notificationRes)
+        public async Task SendTaskAssigned(NotificationRes notificationRes)
         {
-            await Clients.All.SendAsync("TaskAssigned", notificationRes);
+            await Clients.All.SendAsync("SendTaskAssigned", notificationRes);
         }
 
-        public async Task SendGeneralNotification(string userId, string title, string message)
+        public async Task SendTaskUpdate(string message)
         {
-            await Clients.User(userId).SendAsync("ReceiveNotification", new { title, message });
+            await Clients.All.SendAsync("TaskUpdate", message);
         }
     }
 }

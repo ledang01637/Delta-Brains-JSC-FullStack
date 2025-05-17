@@ -13,6 +13,7 @@ using System.Net.Http.Json;
 using DeltaBrainsJSCAppFE.Handel;
 using System.Diagnostics;
 using DeltaBrainsJSCAppFE.Views;
+using DeltaBrainsJSCAppFE.Notification;
 using System.Windows.Markup;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -76,6 +77,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
         private async Task Init()
         {
+            await ConnectSignalRAsync();
             await GetTasks();
         }
 
@@ -83,36 +85,55 @@ namespace DeltaBrainsJSCAppFE.ViewModels
         {
             try
             {
+                var authLogin = AuthStorage.LoadToken();
 
-                _connection = new HubConnectionBuilder()
+                if (authLogin != null && !string.IsNullOrEmpty(authLogin.Token) && AuthStorage.IsTokenValid(authLogin))
+                {
+                    _connection = new HubConnectionBuilder()
                     .WithUrl("https://localhost:7089/hubs/task")
                     .WithAutomaticReconnect()
                     .Build();
+                    _connection.Closed += async (error) =>
+                    {
+                        Debug.WriteLine("Connection closed");
+                        await Task.Delay(2000);
+                        await _connection.StartAsync();
+                    };
 
-                _connection.Closed += async (error) =>
-                {
-                    Console.WriteLine("Connection closed");
-                    await Task.Delay(2000);
+                    _connection.Reconnected += (connectionId) =>
+                    {
+                        Debug.WriteLine("Reconnected: " + connectionId);
+                        return Task.CompletedTask;
+                    };
+
+                    _connection.Reconnecting += (error) =>
+                    {
+                        Debug.WriteLine("Reconnecting...");
+                        return Task.CompletedTask;
+                    };
+
+                    SetupHubEvents();
+
                     await _connection.StartAsync();
-                };
-
-                _connection.Reconnected += (connectionId) =>
+                }
+                else
                 {
-                    Console.WriteLine("Reconnected: " + connectionId);
-                    return Task.CompletedTask;
-                };
+                    MessageBoxHelper.ShowError("Lỗi xác thực, vui lòng đăng nhập lại");
 
-                _connection.Reconnecting += (error) =>
-                {
-                    Console.WriteLine("Reconnecting...");
-                    return Task.CompletedTask;
-                };
+                    var loginWindow = new LoginWindow();
+                    loginWindow.Show();
 
-                SetupHubEvents();
+                    foreach (Window window in Application.Current.Windows)
+                    {
+                        if (window != loginWindow)
+                        {
+                            window.Close();
+                        }
+                    }
 
-                await _connection.StartAsync();
+                    return;
+                }
 
-                Console.WriteLine("Kết nối SignalR thành công: " + _connection.State);
 
             }
             catch (Exception ex)
@@ -124,10 +145,25 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
         private void SetupHubEvents()
         {
+            _connection.On<string>("TaskUpdate", async (data) =>
+            {
+                if (SendToastNotification.IsAppInBackground())
+                {
+                    SendToastNotification.SendNotification();
+                }
+                await GetTasks();
+
+            });
+
             _connection.On<NotificationRes>("SendTaskAssigned", async (data) =>
             {
-                Notification = data;
+                if (SendToastNotification.IsAppInBackground())
+                {
+                    SendToastNotification.SendNotification(data);
+                }
+
                 await GetTasks();
+
             });
         }
 
@@ -137,9 +173,11 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             {
                 IsLoading = true;
 
+                ListTask.Clear();
+
                 var userId = GetFromToken.GetUserId();
 
-                if(userId == 0)
+                if (userId == 0)
                 {
                     MessageBoxHelper.ShowError("Vui lòng đăng nhập lại");
 
@@ -153,6 +191,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                             window.Close();
                         }
                     }
+
                     return;
                 }
 
@@ -166,9 +205,15 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
                     var data = await response.Content.ReadFromJsonAsync<ApiResponse<ObservableCollection<TaskRes>>>();
 
-                    if(data == null || data.Data == null)
+                    if (data == null || data.Data == null)
                     {
                         MessageBoxHelper.ShowError("Lỗi lấy dữ liệu");
+                        return;
+                    }
+
+                    if (!data.Data.Any())
+                    {
+                        MessageBoxHelper.ShowInfo("Bạn hiện không có công việc nào");
                         return;
                     }
 

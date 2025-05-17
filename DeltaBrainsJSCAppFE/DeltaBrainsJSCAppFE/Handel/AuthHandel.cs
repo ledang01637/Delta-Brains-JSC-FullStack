@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -25,10 +26,15 @@ namespace DeltaBrainsJSCAppFE.Handel
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return new ApiResponse<LoginRes> { IsSuccess = false, Message = "Lỗi server" };
+                    return new ApiResponse<LoginRes> { IsSuccess = false, Message = StatusAPI(response.StatusCode) };
                 }
 
                 var content = await response.Content.ReadFromJsonAsync<ApiResponse<LoginRes>>();
+                if (content == null)
+                {
+                    return new ApiResponse<LoginRes> { IsSuccess = false, Message = "Không nhận được dữ liệu phản hồi từ server." };
+                }
+
 
                 return new ApiResponse<LoginRes> { IsSuccess = true, Data = content.Data };
             }
@@ -37,5 +43,21 @@ namespace DeltaBrainsJSCAppFE.Handel
                 return new ApiResponse<LoginRes> { IsSuccess = false, Message = ex.Message };
             }
         }
+        private static string StatusAPI(HttpStatusCode httpStatusCode)
+        {
+            switch (httpStatusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                    return "Không được phép truy cập (401)";
+                case HttpStatusCode.BadRequest:
+                    return "Yêu cầu không hợp lệ (400)";
+                case HttpStatusCode.InternalServerError:
+                    return "Lỗi máy chủ (500)";
+                // Thêm các mã lỗi khác nếu cần
+                default:
+                    return $"Lỗi không xác định: {(int)httpStatusCode}";
+            }
+        }
+
     }
 }

@@ -58,7 +58,7 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                     return ApiResponse<TaskRes>.Fail("Lỗi khi tạo và gửi thông báo");
                 }
 
-                await SenDataHubAsync(notificationRes);
+                await SenDataHubAsync(false, notificationRes);
 
                 var response = _mapper.Map<TaskRes>(task);
                 return ApiResponse<TaskRes>.Success(response);
@@ -89,11 +89,6 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             }
         }
 
-        private async System.Threading.Tasks.Task SenDataHubAsync(NotificationRes notificationRes)
-        {
-            await _hubContext.Clients.All.SendAsync("SendTaskAssigned", notificationRes);
-        }
-
         public async Task<ApiResponse<List<TaskRes>>> GetAll()
         {
             try
@@ -101,6 +96,7 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                 var tasks = await _context.Tasks
                         .Include(ut => ut.Assignee)
                         .Include(ut => ut.AssignedByUser)
+                        .OrderByDescending(ut => ut.Created)
                         .ToListAsync();
 
                 if (!tasks.Any())
@@ -126,6 +122,7 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                 var tasks = await _context.Tasks
                     .Include(ut => ut.Assignee)
                     .Where(ut => ut.UserId == userId && ut.IsCurrent)
+                    .OrderByDescending(ut => ut.Created)
                     .ToListAsync();
 
                 if (!tasks.Any())
@@ -163,6 +160,9 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                 await _context.SaveChangesAsync();
 
                 var response = _mapper.Map<TaskRes>(exist);
+
+                await SenDataHubAsync(true);
+
                 return ApiResponse<TaskRes>.Success(response);
             }
             catch (Exception ex)
@@ -170,6 +170,16 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                 _logger.LogError(ex, "Lỗi khi cập nhật task");
                 return ApiResponse<TaskRes>.Error();
             }
+        }
+
+        //Signal
+        private async System.Threading.Tasks.Task SenDataHubAsync(bool isUpdate, NotificationRes notificationRes = default)
+        {
+            if (isUpdate)
+                await _hubContext.Clients.All.SendAsync("TaskUpdate", "Bạn được giao task mới");
+
+            else
+                await _hubContext.Clients.All.SendAsync("SendTaskAssigned", notificationRes);
         }
 
         private async Task<DeltaBrainsJSCAppBE.Models.Task?> ExistTask(int id)
