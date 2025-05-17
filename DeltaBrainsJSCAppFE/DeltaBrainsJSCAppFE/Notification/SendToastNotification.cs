@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.WinUI.Notifications;
 using DeltaBrainsJSCAppFE.Models.Response;
 using DeltaBrainsJSCAppFE.Views;
+using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
@@ -9,6 +10,7 @@ namespace DeltaBrainsJSCAppFE.Notification
 {
     public class SendToastNotification
     {
+
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
@@ -61,7 +63,7 @@ namespace DeltaBrainsJSCAppFE.Notification
                         }
                         else
                         {
-                            var window = new EmployeeWindow();
+                            var window = App.ServiceProvider.GetRequiredService<EmployeeWindow>(); ;
                             window.Show();
                         }
                     }

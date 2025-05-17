@@ -16,6 +16,7 @@ using DeltaBrainsJSCAppFE.Views;
 using DeltaBrainsJSCAppFE.Notification;
 using System.Windows.Markup;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
@@ -23,6 +24,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
     {
         private static readonly HttpClient _httpClient = new();
         private HubConnection _connection;
+
 
         private bool _isLoading;
 
@@ -81,68 +83,60 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             await GetTasks();
         }
 
-        public async Task ConnectSignalRAsync()
+        //Khởi tạo SignalR
+        private async Task ConnectSignalRAsync()
         {
             try
             {
                 var authLogin = AuthStorage.LoadToken();
 
-                if (authLogin != null && !string.IsNullOrEmpty(authLogin.Token) && AuthStorage.IsTokenValid(authLogin))
-                {
-                    _connection = new HubConnectionBuilder()
-                    .WithUrl("https://localhost:7089/hubs/task")
-                    .WithAutomaticReconnect()
-                    .Build();
-                    _connection.Closed += async (error) =>
-                    {
-                        Debug.WriteLine("Connection closed");
-                        await Task.Delay(2000);
-                        await _connection.StartAsync();
-                    };
-
-                    _connection.Reconnected += (connectionId) =>
-                    {
-                        Debug.WriteLine("Reconnected: " + connectionId);
-                        return Task.CompletedTask;
-                    };
-
-                    _connection.Reconnecting += (error) =>
-                    {
-                        Debug.WriteLine("Reconnecting...");
-                        return Task.CompletedTask;
-                    };
-
-                    SetupHubEvents();
-
-                    await _connection.StartAsync();
-                }
-                else
+                if (authLogin == null || string.IsNullOrEmpty(authLogin.Token) || !AuthStorage.IsTokenValid(authLogin))
                 {
                     MessageBoxHelper.ShowError("Lỗi xác thực, vui lòng đăng nhập lại");
-
-                    var loginWindow = new LoginWindow();
-                    loginWindow.Show();
-
-                    foreach (Window window in Application.Current.Windows)
-                    {
-                        if (window != loginWindow)
-                        {
-                            window.Close();
-                        }
-                    }
-
+                    RedirectToLogin();
                     return;
                 }
 
+                _connection = new HubConnectionBuilder()
+                    .WithUrl("https://localhost:7089/hubs/task")
+                    .WithAutomaticReconnect()
+                    .Build();
 
+                RegisterSignalREvents();
+                SetupHubEvents();
+
+                await StartConnectionAsync();
             }
             catch (Exception ex)
             {
-                MessageBoxHelper.ShowError($"Lỗi không xác định {ex.Message}");
+                MessageBoxHelper.ShowError($"Lỗi khi thiết lập kết nối SignalR: {ex.Message}");
             }
-
         }
 
+        //Đăng ký các sự kiện SignalR
+        private void RegisterSignalREvents()
+        {
+            _connection.Closed += async (error) =>
+            {
+                MessageBoxHelper.ShowWarning("Mất kết nối, đang thử lại...");
+                await Task.Delay(3000);
+                await StartConnectionAsync();
+            };
+
+            _connection.Reconnecting += (error) =>
+            {
+                MessageBoxHelper.ShowWarning("Đang kết nối lại...");
+                return Task.CompletedTask;
+            };
+
+            _connection.Reconnected += (connectionId) =>
+            {
+                MessageBoxHelper.ShowInfo("Đã kết nối lại với server.");
+                return Task.CompletedTask;
+            };
+        }
+
+        //Lăng nghe sự kiện SignalR
         private void SetupHubEvents()
         {
             _connection.On<string>("TaskUpdate", async (data) =>
@@ -152,7 +146,6 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                     SendToastNotification.SendNotification();
                 }
                 await GetTasks();
-
             });
 
             _connection.On<NotificationRes>("SendTaskAssigned", async (data) =>
@@ -161,12 +154,30 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                 {
                     SendToastNotification.SendNotification(data);
                 }
-
                 await GetTasks();
-
             });
         }
 
+        //Khỏi tạo kết nối
+        private async Task StartConnectionAsync()
+        {
+            try
+            {
+                if (_connection.State != HubConnectionState.Connected)
+                {
+                    await _connection.StartAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBoxHelper.ShowError($"Lỗi khi kết nối lại: {ex.Message}");
+                await Task.Delay(5000);
+                await StartConnectionAsync();
+            }
+        }
+
+
+        //Lấy danh sách công việc theo UserId
         public async Task GetTasks()
         {
             try
@@ -181,7 +192,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                 {
                     MessageBoxHelper.ShowError("Vui lòng đăng nhập lại");
 
-                    var loginWindow = new LoginWindow();
+                    var loginWindow = App.ServiceProvider.GetRequiredService<LoginWindow>();
                     loginWindow.Show();
 
                     foreach (Window window in Application.Current.Windows)
@@ -207,7 +218,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
                     if (data == null || data.Data == null)
                     {
-                        MessageBoxHelper.ShowError("Lỗi lấy dữ liệu");
+                        MessageBoxHelper.ShowError("Lỗi lấy dữ liệu nhân viên");
                         return;
                     }
 
@@ -238,30 +249,16 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
         }
 
+        //Logout
         public Task ExecuteLogout()
         {
             try
             {
-
-                var result = MessageBoxHelper.ShowQuestion("Bạn có muốn đăng xuất?");
-
-                if (result == MessageBoxResult.Yes)
+                if (MessageBoxHelper.ShowQuestion("Bạn có muốn đăng xuất?") == MessageBoxResult.Yes)
                 {
                     AppMemory.Instance.CachedTasks = null;
                     AuthStorage.ClearToken();
-
-                    var loginWindow = new LoginWindow();
-                    loginWindow.Show();
-
-                    foreach (Window window in Application.Current.Windows)
-                    {
-                        if (window != loginWindow)
-                        {
-                            window.Close();
-                        }
-                    }
-
-
+                    RedirectToLogin();
                 }
             }
             catch (HttpRequestException httpEx)
@@ -278,6 +275,24 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
 
             return Task.CompletedTask;
+        }
+
+        //Hiện login
+        private static void RedirectToLogin()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var loginWindow = App.ServiceProvider.GetRequiredService<LoginWindow>();
+                loginWindow.Show();
+
+                foreach (Window window in Application.Current.Windows)
+                {
+                    if (window != loginWindow)
+                    {
+                        window.Close();
+                    }
+                }
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

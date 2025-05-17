@@ -46,14 +46,13 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(databaseUrl)
 );
 
+builder.Services.AddSignalR();
 
 var jwtSettings = new TokenRequiment
 {
@@ -112,7 +111,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                         }
                     };
                 });
-builder.Services.AddSignalR();
+
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();

@@ -33,5 +33,13 @@ namespace DeltaBrainsJSCAppBE.Controllers
 
             return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
+
+        [HttpPut("update-user/{id}")]
+        public async Task<IActionResult> Update(UserReq update, int id)
+        {
+            var response = await _service.Updae(update, id);
+
+            return response.IsSuccess ? Ok(response) : BadRequest(response);
+        }
     }
 }

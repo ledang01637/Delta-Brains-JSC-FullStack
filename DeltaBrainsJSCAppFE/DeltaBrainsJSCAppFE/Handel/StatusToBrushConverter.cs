@@ -9,6 +9,8 @@ using System.Windows.Media;
 
 namespace DeltaBrainsJSCAppFE.Handel
 {
+
+    //Custom màu background của công việc dựa trên trạng thái
     public class StatusToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

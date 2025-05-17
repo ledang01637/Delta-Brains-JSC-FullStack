@@ -53,7 +53,6 @@ namespace DeltaBrainsJSCAppFE.Handel
                     return "Yêu cầu không hợp lệ (400)";
                 case HttpStatusCode.InternalServerError:
                     return "Lỗi máy chủ (500)";
-                // Thêm các mã lỗi khác nếu cần
                 default:
                     return $"Lỗi không xác định: {(int)httpStatusCode}";
             }

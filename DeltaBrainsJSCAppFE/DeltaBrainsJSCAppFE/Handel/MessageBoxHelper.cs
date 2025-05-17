@@ -7,6 +7,7 @@ using System.Windows;
 
 namespace DeltaBrainsJSCAppFE.Handel
 {
+    //Custom MessageBox
     public static class MessageBoxHelper
     {
         public static void ShowError(string message)

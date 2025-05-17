@@ -16,7 +16,7 @@
         Name="managerWindow"
         mc:Ignorable="d"
         
-        Title="Quản lý công việc" Height="450" Width="800"
+        Title="Quản lý" Height="450" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -50,7 +50,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
-            <uc:NavigationBarsUC Title="Quản lý công việc" 
+            <uc:NavigationBarsUC Title="Quản lý tất cả công việc" 
                                  TargetElement="{x:Reference Sidebar}"  />
         </Grid>
         <Grid Grid.Row="1">
@@ -80,7 +80,7 @@
                                 Padding="16 8"
                                 DockPanel.Dock="Bottom"
                                 Command="{Binding LogoutCommand}"
-                                CommandParameter="{Binding ElementName=managerWindow}">  
+                                CommandParameter="{Binding ElementName=managerWindow}">
                             <Button.ContentTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -95,25 +95,6 @@
                         </Button>
 
                         <StackPanel>
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
-                    Content="Dashboard"
-                    Foreground="White"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Padding="16 8">
-                                <Button.ContentTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="ViewDashboard"
-                                                 Width="24" Height="24"
-                                                 Foreground="White"/>
-                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
-                                   VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </Button.ContentTemplate>
-                            </Button>
-
                             <Button Style="{StaticResource MaterialDesignFlatButton}"
                                     Content="Tasks"
                                     Foreground="White"
@@ -231,7 +212,10 @@
                                                     CommandParameter="{Binding}">
                                                 <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
                                             </Button>
-                                            <Button Margin="5 0 0 0" Style="{StaticResource gridRemoveButton}">
+                                            <Button Margin="5 0 0 0" 
+                                                    Style="{StaticResource gridRemoveButton}"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding}">
                                                 <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
                                             </Button>
                                         </StackPanel>
@@ -243,7 +227,5 @@
                 </Grid>
             </Grid>
         </Grid>
-
-
     </Grid>
 </Window>

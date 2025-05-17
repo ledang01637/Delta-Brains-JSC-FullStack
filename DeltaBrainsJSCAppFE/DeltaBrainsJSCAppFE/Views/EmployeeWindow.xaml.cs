@@ -20,10 +20,10 @@ namespace DeltaBrainsJSCAppFE.Views
     /// </summary>
     public partial class EmployeeWindow : Window
     {
-        public EmployeeWindow()
+        public EmployeeWindow(EmployeeViewModel viewModel)
         {
             InitializeComponent();
-            this.DataContext = new EmployeeViewModel();
+            this.DataContext = viewModel;
         }
     }
 }

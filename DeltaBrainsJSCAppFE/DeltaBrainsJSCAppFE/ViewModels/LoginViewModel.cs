@@ -2,6 +2,7 @@
 using DeltaBrainsJSCAppFE.Models.Request;
 using DeltaBrainsJSCAppFE.Models.Response;
 using DeltaBrainsJSCAppFE.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -75,6 +76,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
             try
             {
+                //Xác thực đăng nhập
                 var loginResult = await AuthHandel.Login(Username, Password);
 
                 if (!loginResult.IsSuccess || string.IsNullOrEmpty(loginResult.Data?.Token))
@@ -83,21 +85,24 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                     return;
                 }
 
+
+                //Lấy quyền người dùng
                 var role = GetFromToken.GetRole(loginResult.Data.Token);
 
                 Window newWindow = role switch
                 {
-                    "admin" => new ManagerWindow(),
-                    "employee" => new EmployeeWindow(),
+                    "admin" => App.ServiceProvider.GetRequiredService<ManagerWindow>(),
+                    "employee" => App.ServiceProvider.GetRequiredService<EmployeeWindow>(),
                     _ => throw new NotImplementedException()
                 };
+
+                //Lưu lại token
+                AuthStorage.SaveToken(loginResult.Data);
 
                 if (newWindow != null)
                 {
                     newWindow.Show();
                     parentWindow.Close();
-
-                    AuthStorage.SaveToken(loginResult.Data);
                 }
                 else
                 {

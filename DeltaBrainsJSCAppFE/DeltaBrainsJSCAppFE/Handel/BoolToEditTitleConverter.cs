@@ -10,6 +10,7 @@ namespace DeltaBrainsJSCAppFE.Handel
 {
     public class BoolToEditTitleConverter : IValueConverter
     {
+        //Thay đổi title trong window task giữa thêm và sửa
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (bool)value ? "CHỈNH SỬA CÔNG VIỆC" : "THÊM CÔNG VIỆC MỚI";

@@ -13,12 +13,14 @@ namespace DeltaBrainsJSCAppFE.Handel
     {
         private static readonly string FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"appfe_token.json");
 
+        //Lưu thông tin đăng nhập
         public static void SaveToken(LoginRes token)
         {
             var json = JsonSerializer.Serialize(token);
             File.WriteAllText(FilePath, json);
         }
 
+        //Load thông tin
         public static LoginRes LoadToken()
         {
             if (!File.Exists(FilePath)) return null;
@@ -27,10 +29,13 @@ namespace DeltaBrainsJSCAppFE.Handel
             return JsonSerializer.Deserialize<LoginRes>(json);
         }
 
+        //Xóa file
         public static void ClearToken()
         {
             if (File.Exists(FilePath)) File.Delete(FilePath);
         }
+
+        //Kiểm tra token hợp lệ
         public static bool IsTokenValid(LoginRes token)
         {
             return token != null && token.Expiration > DateTime.UtcNow;

@@ -14,6 +14,10 @@ using static System.Net.WebRequestMethods;
 using DeltaBrainsJSCAppFE.Models;
 using DeltaBrainsJSCAppFE.Models.Request;
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using Windows.System;
+using Windows.UI;
+using Microsoft.Extensions.Logging;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
@@ -45,6 +49,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
         public AsyncRelayCommand<object> ManagerCommand { get; }
         public AsyncRelayCommand<object> AddNewCommand { get; }
         public AsyncRelayCommand<object> EdiCommand { get; }
+        public AsyncRelayCommand<object> DeleteCommand { get; }
 
         public ManagerViewModel()
         {
@@ -52,6 +57,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             ManagerCommand = new AsyncRelayCommand<object>((p) => Init());
             AddNewCommand = new AsyncRelayCommand<object>((p) => AddNew());
             EdiCommand = new AsyncRelayCommand<object>((p) => Edit(p as TaskItemViewModel));
+            DeleteCommand = new AsyncRelayCommand<object>((p) => Delete(p as TaskItemViewModel));
             LogoutCommand = new AsyncRelayCommand<object>(
 
                 async (p) => await ExecuteLogout());
@@ -67,6 +73,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             await GetTasks();
         }
 
+        //Lấy toàn bộ danh sách công việc
         public async Task GetTasks()
         {
             try
@@ -110,7 +117,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                     AppMemory.Instance.CachedTasks = null;
                     AuthStorage.ClearToken();
 
-                    var loginWindow = new LoginWindow();
+                    var loginWindow = App.ServiceProvider.GetRequiredService<LoginWindow>();
                     loginWindow.Show();
 
                     foreach (Window window in Application.Current.Windows)
@@ -139,29 +146,15 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
             return Task.CompletedTask;
         }
+
+
+        //Thêm mới công việc
         public async Task AddNew()
         {
-            var taskWindow = new TaskWindow();
-
-            if (taskWindow.DataContext is TaskViewModel vm)
-            {
-                EventHandler? handler = null;
-                handler = async (s, args) =>
-                {
-                    vm.TaskSaved -= handler; 
-                    await GetTasks();
-                };
-
-                vm.TaskSaved += handler;
-                taskWindow.ShowDialog();
-            }
-            else
-            {
-                MessageBoxHelper.ShowError("Lỗi khởi tạo view model");
-                taskWindow.Close();
-            }
+            CallBackTaskViewModel();
         }
 
+        //Chỉnh sửa công việc
         public async Task Edit(TaskItemViewModel taskItem)
         {
             if (taskItem?.Task == null)
@@ -170,21 +163,72 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                 return;
             }
 
-            var taskWindow = new TaskWindow(taskItem.Task);
+            CallBackTaskViewModel(taskItem.Task);
+        }
 
-            if (taskWindow.DataContext is TaskViewModel vm)
+        //CallBack từ TaskViewModel
+        public void CallBackTaskViewModel(TaskRes taskRes = default)
+        {
+            try
             {
-                EventHandler? handler = null;
-                handler = async (s, args) =>
+                var taskWindow = new TaskWindow(taskRes);
+
+                if (taskWindow.DataContext is TaskViewModel vm)
                 {
-                    vm.TaskSaved -= handler;
-                    await GetTasks();
-                };
+                    // Dùng weak event để tránh rò rỉ bộ nhớ
+                    WeakEventManager<TaskViewModel, EventArgs>.AddHandler(
+                        vm,
+                        nameof(vm.TaskSaved),
+                        async (s, args) =>
+                        {
+                            await GetTasks();
+                        });
+                }
 
-                vm.TaskSaved += handler;
+                taskWindow.ShowDialog();
             }
+            catch (Exception ex)
+            {
+                MessageBoxHelper.ShowError($"Lỗi khi mở cửa sổ task: {ex.Message}");
+            }
+        }
 
-            taskWindow.ShowDialog();
+        public async Task Delete(TaskItemViewModel taskItem)
+        {
+            try
+            {
+                if (taskItem?.Task == null)
+                {
+                    MessageBoxHelper.ShowError("Dữ liệu task không hợp lệ");
+                    return;
+                }
+
+                var result = MessageBoxHelper.ShowQuestion("Bạn có chắc chắn muốn xóa task này?");
+
+                if (result == MessageBoxResult.Yes)
+                {
+
+                    string url = "https://localhost:7089/api/Task/delete-task";
+
+
+                    var response = await _httpClient.PostAsJsonAsync(url, taskItem?.Task.Id);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        MessageBoxHelper.ShowError("Xóa thất bại");
+                        return;
+                    }
+
+                    MessageBoxHelper.ShowInfo("Xóa thành công");
+                    await GetTasks();
+
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBoxHelper.ShowError("Lỗi không xác định: " + ex.Message);
+                return;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

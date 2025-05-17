@@ -2,6 +2,7 @@
 using DeltaBrainsJSCAppFE.Models.Request;
 using DeltaBrainsJSCAppFE.Models.Response;
 using DeltaBrainsJSCAppFE.Views;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,11 +19,12 @@ namespace DeltaBrainsJSCAppFE.ViewModels
     public class TaskViewModel : BaseViewModel
     {
         private static readonly HttpClient _httpClient = new();
+        private int _assignedBy {  get; set; }
 
         public event EventHandler TaskSaved;
         public TaskReq Request { get; set; } = new TaskReq();
         public TaskUpdate UpdateRequest { get; set; }
-        public object CurrentTask => IsEditMode ? (object)UpdateRequest : Request;
+        public object CurrentTask => IsEditMode ? UpdateRequest : Request;
 
         public bool IsEditMode { get; set; }
 
@@ -56,22 +58,22 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             TaskViewCommand = new AsyncRelayCommand<object>((p) => Init());
             Request = new TaskReq();
             IsEditMode = false;
+            _assignedBy = GetFromToken.GetUserId();
         }
 
         public TaskViewModel(TaskRes existingTask)
         {
             TaskViewCommand = new AsyncRelayCommand<object>((p) => Init());
+
             IsEditMode = true;
 
+            _assignedBy = GetFromToken.GetUserId();
 
-
-            var assignedBy = GetFromToken.GetUserId();
-
-            if (assignedBy == 0)
+            if (_assignedBy == 0)
             {
                 MessageBoxHelper.ShowError("Vui lòng đăng nhập lại");
 
-                var loginWindow = new LoginWindow();
+                var loginWindow = App.ServiceProvider.GetRequiredService<LoginWindow>();
                 loginWindow.Show();
 
                 foreach (Window window in Application.Current.Windows)
@@ -90,7 +92,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                 UserId = int.TryParse(existingTask.AssigneeName, out int anId) ? anId : 0,
                 Title = existingTask.Title,
                 Description = existingTask.Description,
-                AssignedBy = assignedBy
+                AssignedBy = _assignedBy
             };
             OnPropertyChanged(nameof(UpdateRequest));
         }
@@ -100,6 +102,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             await LoadUser();
         }
 
+        //Lấy toàn bộ User để show lên ComboBox
         public async Task LoadUser()
         {
             try
@@ -136,6 +139,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
         }
 
+        //Lưu lại
         public async Task Save()
         {
             try
@@ -148,7 +152,6 @@ namespace DeltaBrainsJSCAppFE.ViewModels
 
                 if (IsEditMode)
                 {
-                    var a = UpdateRequest;
                     var response = await _httpClient.PutAsJsonAsync($"https://localhost:7089/api/Task/update-task/{UpdateRequest.Id}", UpdateRequest);
                     if (!response.IsSuccessStatusCode)
                     {
@@ -160,13 +163,11 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                 else
                 {
 
-                    var userId = GetFromToken.GetUserId();
-
-                    if (userId == 0)
+                    if (_assignedBy == 0)
                     {
                         MessageBoxHelper.ShowError("Vui lòng đăng nhập lại");
 
-                        var loginWindow = new LoginWindow();
+                        var loginWindow = App.ServiceProvider.GetRequiredService<LoginWindow>();
                         loginWindow.Show();
 
                         foreach (Window window in Application.Current.Windows)
@@ -179,7 +180,7 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                         return;
                     }
 
-                    Request.AssignedBy = userId;
+                    Request.AssignedBy = _assignedBy;
 
                     var response = await _httpClient.PostAsJsonAsync("https://localhost:7089/api/Task/create", Request);
                     if (!response.IsSuccessStatusCode)

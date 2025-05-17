@@ -93,63 +93,7 @@
                         </Button>
 
                         <StackPanel>
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
-                    Content="Dashboard"
-                    Foreground="White"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    Padding="16 8">
-                                <Button.ContentTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="ViewDashboard"
-                                                 Width="24" Height="24"
-                                                 Foreground="White"/>
-                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
-                                   VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </Button.ContentTemplate>
-                            </Button>
 
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                    Content="Tasks"
-                                    Foreground="White"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left"
-                                    Padding="16 8">
-                                <Button.ContentTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="FormatListChecks"
-                                                 Width="24" Height="24"
-                                                 Foreground="White"/>
-                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
-                                   VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </Button.ContentTemplate>
-                            </Button>
-
-                            <Button 
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                Content="Employees"
-                                Foreground="White"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Left"
-                                Padding="16 8">
-                                <Button.ContentTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="AccountGroup"
-                                                 Width="24" Height="24"
-                                                 Foreground="White"/>
-                                            <TextBlock Text="{Binding}" Margin="8 0 0 0"
-                                   VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </Button.ContentTemplate>
-                            </Button>
                         </StackPanel>
 
                     </DockPanel>
@@ -163,8 +107,6 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
-                <!-- Top Navigation Bar with Hamburger Button -->
 
                 <!-- Main Content -->
                 <Grid Grid.Row="1" Margin="10">

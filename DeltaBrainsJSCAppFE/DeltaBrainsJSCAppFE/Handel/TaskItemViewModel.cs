@@ -10,6 +10,7 @@ namespace DeltaBrainsJSCAppFE.Handel
 {
     public class TaskItemViewModel
     {
+        //Lấy chữ cái đầu tiền của name và đổi màu background
         public TaskItemViewModel(TaskRes task)
         {
             Task = task;

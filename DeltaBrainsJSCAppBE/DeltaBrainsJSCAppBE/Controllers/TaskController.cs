@@ -46,7 +46,7 @@ namespace DeltaBrainsJSCAppBE.Controllers
         }
 
         [HttpPut("update-task/{id}")]
-        public async Task<IActionResult> Update(int id ,[FromBody] TaskUpdate request)
+        public async Task<IActionResult> Update(int id ,[FromBody] TaskReq request)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Dữ liệu không hợp lệ.");
@@ -54,6 +54,17 @@ namespace DeltaBrainsJSCAppBE.Controllers
             var response = await _service.Update(request, id);
 
              return response.IsSuccess ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpPost("delete-task")]
+        public async Task<IActionResult> Delete([FromBody] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Dữ liệu không hợp lệ.");
+
+            var response = await _service.Delete(id);
+
+            return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
     }
 }

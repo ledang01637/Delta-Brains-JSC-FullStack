@@ -12,6 +12,7 @@ namespace DeltaBrainsJSCAppFE.Handel
 {
     public class GetFromToken
     {
+        //Lấy quyền người dùng dựa trên token
         public static string? GetRole(string token)
         {
             try
@@ -30,6 +31,8 @@ namespace DeltaBrainsJSCAppFE.Handel
                 return null;
             }
         }
+
+        //Lấy userId của dựa vài token
         public static int GetUserId()
         {
             try

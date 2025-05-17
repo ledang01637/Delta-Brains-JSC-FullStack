@@ -20,15 +20,10 @@ namespace DeltaBrainsJSCAppFE.Views
     /// </summary>
     public partial class ManagerWindow : Window
     {
-        public ManagerWindow()
+        public ManagerWindow(ManagerViewModel viewModel)
         {
             InitializeComponent();
-            this.DataContext = new ManagerViewModel();
-        }
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
+            this.DataContext = viewModel;
         }
     }
 }

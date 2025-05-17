@@ -172,6 +172,29 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             }
         }
 
+
+        public async Task<ApiResponse<bool>> Delete(int id)
+        {
+            try
+            {
+                var exist = await ExistTask(id);
+                if (exist == null)
+                {
+                    return ApiResponse<bool>.NotFound();
+                }
+                _context.Tasks.Remove(exist);
+                await _context.SaveChangesAsync();
+
+                return ApiResponse<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi cập nhật task");
+                return ApiResponse<bool>.Error();
+            }
+
+        }
+
         //Signal
         private async System.Threading.Tasks.Task SenDataHubAsync(bool isUpdate, NotificationRes notificationRes = default)
         {
@@ -189,6 +212,5 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                 .Include(ut => ut.AssignedByUser)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
-
     }
 }

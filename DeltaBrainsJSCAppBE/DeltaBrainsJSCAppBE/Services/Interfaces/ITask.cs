@@ -32,6 +32,14 @@ namespace DeltaBrainsJSCAppBE.Services.Interfaces
         /// <summary>
         /// Cập nhật Task
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<ApiResponse<bool>> Delete(int id);
+
+
+        /// <summary>
+        /// Cập nhật Task
+        /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<ApiResponse<List<TaskRes>>> GetTasksByUserId(int userId);
