@@ -70,6 +70,8 @@ namespace DeltaBrainsJSCAppFE.CustomUserControl
             parentWindow?.Close();
         }
 
+
+
         private void ToggleSliderButton_Click(object sender, RoutedEventArgs e)
         {
             if (TargetElement != null)
@@ -77,6 +79,15 @@ namespace DeltaBrainsJSCAppFE.CustomUserControl
                 TargetElement.Visibility = TargetElement.Visibility == Visibility.Visible
                     ? Visibility.Collapsed
                     : Visibility.Visible;
+            }
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            Window window = Window.GetWindow(this);
+            if (window != null)
+            {
+                window.WindowState = WindowState.Minimized;
             }
         }
     }

@@ -48,6 +48,11 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                     return ApiResponse<LoginRes>.Fail("Tên đăng nhập hoặc mật khẩu không đúng");
                 }
 
+                if(user.Id == 0)
+                {
+                    return ApiResponse<LoginRes>.Fail("Lỗi xác thực người dùng");
+                }
+
                 var token = GenerateJwtToken(user);
 
                 if (token == null)
@@ -71,11 +76,6 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
 
         }
 
-        public ApiResponse<bool> Logout()
-        {
-            return ApiResponse<bool>.Success(true);
-        }
-
         private string? GenerateJwtToken(User user, int accessExpire = 75)
         {
             try
@@ -87,7 +87,8 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
 
                 var claims = new[]
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
                     new Claim(ClaimTypes.Name, user.Email),
@@ -128,7 +129,10 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
             }
             catch
             {
-                return null;
+                return new User
+                {
+                    Id = 0
+                };
             }
         }
     }

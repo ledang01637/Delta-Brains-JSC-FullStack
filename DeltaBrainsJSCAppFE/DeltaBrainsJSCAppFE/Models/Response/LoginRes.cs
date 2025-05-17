@@ -11,7 +11,7 @@ namespace DeltaBrainsJSCAppFE.Models.Response
         public bool SuccsessFull { get; set; }
         public string Error { get; set; }
         public string Token { get; set; }
-        public string Expiration { get; set; }
+        public DateTime Expiration { get; set; }
     }
 
 }

@@ -12,11 +12,5 @@ namespace DeltaBrainsJSCAppBE.Services.Interfaces
         /// <param name="request"></param>
         /// <returns></returns>
         ApiResponse<LoginRes> Login(LoginReq request);
-
-        /// <summary>
-        /// Đăng xuất
-        /// </summary>
-        /// <returns></returns>
-        ApiResponse<bool> Logout();
     }
 }

@@ -13,6 +13,15 @@ namespace DeltaBrainsJSCAppBE.Services.Interfaces
         /// <returns></returns>
         Task<ApiResponse<UserRes>> Create(UserReq request);
 
+
+        /// <summary>
+        /// Cập nhật User
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<ApiResponse<UserRes>> Updae(UserReq request, int id);
+
         /// <summary>
         /// Lấy danh sách User
         /// </summary

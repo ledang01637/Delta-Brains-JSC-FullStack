@@ -28,13 +28,6 @@ namespace DeltaBrainsJSCAppBE.Controllers
             return Ok(result);
         }
 
-        [HttpPost("logout")]
-        public IActionResult Logout()
-        {
-            var result = _authService.Logout();
-            return Ok(result);
-        }
-
 
     }
 }

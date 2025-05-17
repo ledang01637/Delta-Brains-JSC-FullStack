@@ -2,6 +2,8 @@
 using DeltaBrainsJSCAppFE.Models.Request;
 using DeltaBrainsJSCAppFE.Models.Response;
 using DeltaBrainsJSCAppFE.Views;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -11,6 +13,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using static System.Net.WebRequestMethods;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
@@ -55,45 +58,64 @@ namespace DeltaBrainsJSCAppFE.ViewModels
                    !string.IsNullOrWhiteSpace(Password);
         }
 
-        public async Task LoginAsync(Window? p)
+        public async Task LoginAsync(Window? parentWindow)
         {
-            if(p == null)
+            if (parentWindow == null)
             {
-                MessageBox.Show("Lỗi hệ thống.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxHelper.ShowWarning("Lỗi hệ thống: Không xác định được cửa sổ.");
                 return;
             }
+
+            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
+            {
+                MessageBoxHelper.ShowWarning("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+                return;
+            }
+
             IsLoading = true;
 
             try
             {
-                var result = await AuthHandel.Login(Username, Password);
+                //Xác thực đăng nhập
+                var loginResult = await AuthHandel.Login(Username, Password);
 
-                if (!result.IsSuccess)
+                if (!loginResult.IsSuccess || string.IsNullOrEmpty(loginResult.Data?.Token))
                 {
-                    MessageBox.Show("Sai tài khoản mật khẩu.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxHelper.ShowError($"{loginResult.Message}");
                     return;
                 }
 
-                var role = GetRoleFromToken(result.Data.Token);
 
-                if (role == "admin")
+                //Lấy quyền người dùng
+                var role = GetFromToken.GetRole(loginResult.Data.Token);
+
+                Window newWindow = role switch
                 {
-                    new ManagerWindow().Show();
-                    p.Close();
-                }
-                else if (role == "employee")
+                    "admin" => App.ServiceProvider.GetRequiredService<ManagerWindow>(),
+                    "employee" => App.ServiceProvider.GetRequiredService<EmployeeWindow>(),
+                    _ => throw new NotImplementedException()
+                };
+
+                //Lưu lại token
+                AuthStorage.SaveToken(loginResult.Data);
+
+                if (newWindow != null)
                 {
-                    new EmployeeWindow().Show();
-                    p.Close();
+                    newWindow.Show();
+                    parentWindow.Close();
                 }
                 else
                 {
-                    MessageBox.Show("Tài khoản không có quyền truy cập.", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBoxHelper.ShowWarning("Tài khoản không có quyền truy cập phù hợp.");
                 }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                MessageBoxHelper.ShowError($"Lỗi kết nối: {httpEx.Message}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi đăng nhập: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxHelper.ShowError($"Lỗi không xác định: {ex.Message}");
             }
             finally
             {
@@ -101,23 +123,6 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
         }
 
-        public static string? GetRoleFromToken(string token)
-        {
-            try
-            {
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
-
-                var roleClaim = jwtToken.Claims.FirstOrDefault(c =>
-                    c.Type == ClaimTypes.Role || c.Type.Equals("role", StringComparison.OrdinalIgnoreCase));
-
-                return roleClaim?.Value?.ToLower();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi giải mã token: {ex.Message}", "Lỗi Token", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
-            }
-        }
+        
     }
 }

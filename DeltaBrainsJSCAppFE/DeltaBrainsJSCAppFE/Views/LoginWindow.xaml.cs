@@ -20,17 +20,10 @@ namespace DeltaBrainsJSCAppFE.Views
     /// </summary>
     public partial class LoginWindow : Window
     {
-        public LoginWindow()
+        public LoginWindow(LoginViewModel viewModel)
         {
             InitializeComponent();
-
-            this.KeyDown += (sender, e) =>
-            {
-                if (e.Key == Key.Enter && DataContext is LoginViewModel vm)
-                {
-                    vm.LoginCommand.Execute(null);
-                }
-            };
+            this.DataContext = viewModel;
         }
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {

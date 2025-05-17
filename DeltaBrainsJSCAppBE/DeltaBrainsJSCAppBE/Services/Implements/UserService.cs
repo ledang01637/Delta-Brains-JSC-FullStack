@@ -36,6 +36,7 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                 user.Password = CompareSHA256.ToSHA256(request.Password);
 
                 _context.Users.Add(user);
+
                 await _context.SaveChangesAsync();
 
                 await _context.Entry(user).Reference(u => u.Role).LoadAsync();
@@ -72,6 +73,39 @@ namespace DeltaBrainsJSCAppBE.Services.Implements
                 _logger.LogError(ex.Message);
                 return System.Threading.Tasks.Task.FromResult(ApiResponse<List<UserRes>>.Error());
             }
+        }
+
+        public async Task<ApiResponse<UserRes>> Updae(UserReq request, int id)
+        {
+            try
+            {
+                var exist = await ExistUser(id);
+
+                if (exist == null)
+                {
+                    return ApiResponse<UserRes>.NotFound();
+                }
+
+                _mapper.Map(request, exist);
+
+                _context.Users.Update(exist);
+                await _context.SaveChangesAsync();
+
+                var response = _mapper.Map<UserRes>(exist);
+
+                return ApiResponse<UserRes>.Success(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi cập nhật user");
+                return ApiResponse<UserRes>.Error();
+            }
+        }
+        private async Task<User?> ExistUser(int id)
+        {
+            return await _context.Users
+                .Include(ut => ut.Role)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
     }
 }
