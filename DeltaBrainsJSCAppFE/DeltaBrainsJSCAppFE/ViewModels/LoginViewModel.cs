@@ -5,6 +5,7 @@ using DeltaBrainsJSCAppFE.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.ComponentModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
@@ -13,7 +14,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using static System.Net.WebRequestMethods;
 
 namespace DeltaBrainsJSCAppFE.ViewModels
 {
@@ -26,19 +26,34 @@ namespace DeltaBrainsJSCAppFE.ViewModels
         public string Username
         {
             get => _username;
-            set { _username = value; OnPropertyChanged(); LoginCommand.RaiseCanExecuteChanged(); }
+            set 
+            { 
+                _username = value; 
+                OnPropertyChanged(); 
+                LoginCommand.RaiseCanExecuteChanged(); 
+            }
         }
 
         public string Password
         {
             get => _password;
-            set { _password = value; OnPropertyChanged(); LoginCommand.RaiseCanExecuteChanged(); }
+            set 
+            { 
+                _password = value; 
+                OnPropertyChanged(); 
+                LoginCommand.RaiseCanExecuteChanged(); 
+            }
         }
 
         public bool IsLoading
         {
             get => _isLoading;
-            set { _isLoading = value; OnPropertyChanged(); LoginCommand.RaiseCanExecuteChanged(); }
+            set 
+            { 
+                _isLoading = value; 
+                OnPropertyChanged();
+                LoginCommand.RaiseCanExecuteChanged(); 
+            }
         }
 
         public AsyncRelayCommand<object> LoginCommand { get; }
@@ -123,6 +138,12 @@ namespace DeltaBrainsJSCAppFE.ViewModels
             }
         }
 
-        
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
