@@ -25,12 +25,5 @@ namespace DeltaBrainsJSCAppFE.Views
             InitializeComponent();
             this.DataContext = viewModel;
         }
-        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is LoginViewModel vm)
-            {
-                vm.Password = ((PasswordBox)sender).Password;
-            }
-        }
     }
 }
